@@ -1,0 +1,9 @@
+{
+  "name": "toolbox-cevidentia",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tool Box by C'Evidentia - fonctions serveur (Netlify Functions + Blobs)",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
