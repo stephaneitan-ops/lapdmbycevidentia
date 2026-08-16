@@ -1059,11 +1059,18 @@ async function verifyAdminPassword(pw){
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ action: 'verify', password: pw })
     });
-    if(res.status === 404) throw new Error('API non déployée');
+    // Seuls 200 (ok) et 401 (mauvais mot de passe, réponse volontaire de notre fonction) sont
+    // des réponses fiables de la fonction serveur. Tout le reste (404, 500, erreur réseau...) = repli.
+    if(res.status !== 200 && res.status !== 401){
+      throw new Error('Réponse serveur inattendue (' + res.status + ')');
+    }
     const json = await res.json();
-    return { ok: !!json.ok, remote: true };
+    if(typeof json.ok !== 'boolean'){
+      throw new Error('Réponse serveur invalide');
+    }
+    return { ok: json.ok, remote: true };
   } catch(e){
-    // API pas encore déployée (test dans Claude, ou site pas encore mis à jour) : repli local
+    // API pas encore déployée / en erreur (test dans Claude, ou souci serveur) : repli local
     return { ok: pw === ADMIN_PASSWORD, remote: false };
   }
 }
