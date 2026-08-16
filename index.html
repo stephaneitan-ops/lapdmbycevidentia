@@ -4835,13 +4835,28 @@ function convExtractPrice(val, fallbackText){
   }
   return null;
 }
+// Reconnaît un en-tête "simplifié" : le nom de la catégorie sert directement d'intitulé
+// de colonne (ex. "Unifocal" / "Progressif" / "Proximité"), avec juste une colonne "Prix" à
+// côté — sans "Nom du verre" ni "Code EDI". Pratique pour ajouter rapidement une nouvelle
+// mutuelle sans reproduire la mise en page complète des autres onglets.
+const CONV_SIMPLE_CAT_WORDS = ['unifocal','unifocaux','progressif','progressifs','prog','proximite','proximites','degressif','degressifs'];
+function convIsSimpleCatHeader(v){
+  return CONV_SIMPLE_CAT_WORDS.indexOf(normText(v)) >= 0;
+}
+
 function convParseSheet(ws){
   const results = [];
   const {maxRow, maxCol} = convSheetDims(ws);
   const headers = [];
+  const simpleHeaders = [];
   for(let r=1;r<=maxRow;r++){
     for(let c=1;c<=maxCol;c++){
-      if(convIsHeaderCell(convCellValue(ws,r,c))) headers.push([r,c]);
+      const v = convCellValue(ws,r,c);
+      if(convIsHeaderCell(v)){
+        headers.push([r,c]);
+      } else if(convIsSimpleCatHeader(v) && normText(convCellValue(ws,r,c+1)).indexOf('prix')===0){
+        simpleHeaders.push([r,c]);
+      }
     }
   }
   headers.forEach(([hr,hc]) => {
@@ -4879,6 +4894,31 @@ function convParseSheet(ws){
       r++;
     }
   });
+
+  simpleHeaders.forEach(([hr,hc]) => {
+    const baseType = convBaseTypeFromText(convCellValue(ws,hr,hc)) || 'Unifocaux';
+    let blankStreak = 0;
+    let r = hr+1;
+    while(r<=maxRow){
+      const nameVal = convCellValue(ws, r, hc);
+      if(convIsHeaderCell(nameVal) || convIsSimpleCatHeader(nameVal)) break;
+      if(nameVal===null || nameVal===undefined || String(nameVal).trim()===''){
+        blankStreak++;
+        if(blankStreak>=2) break;
+        r++; continue;
+      }
+      blankStreak = 0;
+      const name = String(nameVal).trim().replace(/\s+/g,' ');
+      const price = convExtractPrice(convCellValue(ws, r, hc+1), name);
+      const finish = convFinishFromText(name);
+      const displayCategory = finish ? (baseType+' '+finish) : baseType;
+      if(name && normText(name)!=='0' && name.length>1){
+        results.push({category: displayCategory, name, code: null, price});
+      }
+      r++;
+    }
+  });
+
   return results;
 }
 function convScToNumber(v){
@@ -4937,7 +4977,9 @@ function convGuessReseau(name){
   if(n.indexOf('Sévéane')===0) return 'Sévéane';
   if(n.indexOf('Viamedis')===0 || n.indexOf('VM')===0) return 'Viamedis';
   if(n.indexOf('IS')===0 || n.indexOf('ISanté')===0) return 'Isanté';
-  return 'Autres';
+  // Aucun réseau connu détecté : on crée un nouveau réseau à son propre nom, plutôt que
+  // de la mélanger avec d'autres mutuelles non reconnues dans un fourre-tout "Autres".
+  return n;
 }
 
 function convertSourceWorkbook(wb){
