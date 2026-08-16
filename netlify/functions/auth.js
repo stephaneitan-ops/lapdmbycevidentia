@@ -7,6 +7,18 @@ const { getStore } = require('@netlify/blobs');
 const crypto = require('crypto');
 
 const DEFAULT_PASSWORD = 'Teamops2026'; // mot de passe initial ; changeable depuis l'onglet Admin ensuite
+const SITE_ID = '1073646c-ef38-4e99-b77a-2a7aaa928b25'; // Project ID Netlify (lapdmbycevidentia)
+
+// Configuration manuelle du store : nécessaire dans certains contextes de déploiement où
+// Netlify n'injecte pas automatiquement le contexte Blobs. Le jeton est lu depuis une
+// variable d'environnement (Project configuration -> Environment variables -> NETLIFY_BLOBS_TOKEN).
+function blobStore(name) {
+  return getStore({
+    name,
+    siteID: SITE_ID,
+    token: process.env.NETLIFY_BLOBS_TOKEN,
+  });
+}
 
 function hashPw(pw) {
   return crypto.createHash('sha256').update(String(pw || '')).digest('hex');
@@ -35,6 +47,14 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: cors, body: JSON.stringify({ error: 'Méthode non autorisée.' }) };
   }
 
+  if (!process.env.NETLIFY_BLOBS_TOKEN) {
+    return {
+      statusCode: 500,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: "Variable d'environnement NETLIFY_BLOBS_TOKEN manquante sur le site Netlify." }),
+    };
+  }
+
   let body;
   try {
     body = JSON.parse(event.body || '{}');
@@ -42,7 +62,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'JSON invalide.' }) };
   }
 
-  const authStore = getStore('toolbox-auth');
+  const authStore = blobStore('toolbox-auth');
   const storedHash = await getStoredHash(authStore);
 
   if (body.action === 'verify') {
