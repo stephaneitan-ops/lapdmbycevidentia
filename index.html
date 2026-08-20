@@ -39,6 +39,7 @@
     background:linear-gradient(165deg,var(--teal) 0%,var(--teal-deep) 100%);
     padding:30px 18px;
     display:flex;flex-direction:column;gap:32px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
   }
   .sidebar-brand{padding:0 10px;}
   .brand-row{display:flex;align-items:center;gap:11px;}
@@ -482,6 +483,47 @@
   /* Préconisations */
   .precos-selects{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
 
+  .glossaire-toggle{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;color:var(--teal-deep);
+    background:#EAF2FE;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;margin-bottom:16px;
+  }
+  .glossaire-toggle:hover{background:#DCEBFE;}
+  .glossaire-panel{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+    padding:24px;margin-bottom:20px;
+  }
+  .glossaire-title{
+    font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--ink);
+    margin:0 0 20px;
+  }
+  .glossaire-categories{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:20px;}
+  .glossaire-category{flex:1;min-width:230px;}
+  .glossaire-category-title{
+    font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+  .glossaire-columns{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .glossaire-col-header{
+    flex:1;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;
+    color:#fff;border-radius:7px;padding:6px 4px;letter-spacing:.03em;
+  }
+  .glossaire-col-header.seiko{background:var(--brass);}
+  .glossaire-col-header.hoya{background:var(--teal-deep);}
+  .glossaire-col-spacer{width:16px;flex:none;}
+  .glossaire-pair{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+  .glossaire-box{
+    flex:1;font-size:12px;text-align:center;padding:7px 6px;border-radius:6px;
+    background:#F5F7FA;color:var(--ink);border:1px solid var(--line);word-break:break-word;
+  }
+  .glossaire-box.empty{color:var(--ink-soft);font-style:italic;background:transparent;border-style:dashed;}
+  .glossaire-arrow{flex:none;width:16px;color:var(--ink-soft);text-align:center;font-size:13px;}
+  .glossaire-notes{
+    border-top:1.5px solid var(--line);padding-top:14px;font-size:13px;color:var(--ink-soft);
+  }
+  .glossaire-notes div{margin-bottom:4px;}
+  .glossaire-notes strong{color:var(--ink);}
+
   .precos-type-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
   .precos-type-btn{
     font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;
@@ -787,6 +829,12 @@
         </select>
       </div>
     </div>
+
+    <button class="glossaire-toggle" id="glossaireToggleBtn" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Table de correspondance verres/traitements HOYA ↔ Seiko
+    </button>
+    <div class="glossaire-panel" id="glossairePanel" style="display:none;"></div>
 
     <div class="precos-type-filter" id="precosTypeFilter" style="display:none;">
       <button class="precos-type-btn active" data-type="Tous" type="button">Tous</button>
@@ -3923,6 +3971,7 @@ const PRECOS_DEFAULT_DATA = [
 ];
 const PRECOS_HIERARCHY = {"Apgis":["Apgis","Apgis Carrefour","Apgis Notariat"],"P2 / P3":["P2 Access","P2 Premium","P3 Access ou Forfait Access","P3 Premium ou Forfait Premium","SC P2 Access","SC P2 Premium"],"Almerys":["Almerys"],"Carte Blanche":["CB Adecco","CB Europ Assistance","CB Europ Assistance PM","CB GMC LOréal","CB GMC Loréal PM","CB Génération Sephora","CB Helium","CB Helium PM","CB Henner","CB Henner PM","CB Viv FG Manu PM","CB Vivinter FG Manufacture","CB Vivinter Oteline","CB Vivinter Oteline PM","Carte Blanche (CB)"],"Dynalis":["Dynalis Sanofi","Dynalis Sanofi PM"],"Kalixia":["KX AON Stellantis","KX Aon Stellantis PM","KX Assainissement NON CADRE","KX Assainissemt Non Cadre PM","KX Génération Dassault","KX Helium","KX Ipeca Airbus","KX Saint Gobain","KX Saint Gobain PM","Kalixia"],"Itelis":["IT AG2R","IT AON Mutuelle Nuoma","IT AON Systra","IT CGRM","IT Colonna","IT Génération","IT Génération Deloitte","IT Helium","IT Helium Devoteam","IT Henner Emeria","IT Mercer LV","IT Viv CapG PM","IT Viv Capgemini","IT Vivinter","IT Vivinter Dior","IT Vivinter TF1","IT Vivinter TF1 PM","IT WTW Bouygues","IT WTW Bouygues PM","IT WTW Brico Depot","IT WTW Brico Depot PM","IT WTW Castorama","IT WTW Castorama PM","IT WTW Ubisoft","It Génération Deloitte","It Génération Deloitte PM","It Henner Orange","It Henner Orange PM","It Vivinter Dior PM","Itelis"],"Oxantis":["Ox Harmonie Naval PM","Oxantis","Oxantis Harmonie Naval Group","Oxantis Safran"],"Sévéane":["Sévéane Korelio"],"Santéclair":["SC","SC Delifrance","SC Framatome","SC Helium","SC JTEKT","SC MNPAF","SC Véolia Water Tech Zone"],"Isanté":["IS Hazardous W Cadre et NON Cad","IS WTW Véolia Energie Perf et D","ISanté WTW Assainissement CADRE","ISanté WTW Véolia Régime Groupe"],"Viamedis":["VMAltran","Viamedis"],"100% Santé":["100% Santé"]};
 const PRECOS_VISIBILITY_DEFAULT = {"Apgis Notariat":true,"P2 Access":true,"P2 Premium":true,"Apgis":true,"Apgis Carrefour":true,"Almerys":true,"Carte Blanche (CB)":true,"CB Adecco":true,"CB Europ Assistance PM":true,"CB Europ Assistance":false,"CB GMC Loréal PM":true,"CB GMC LOréal":false,"CB Génération Sephora":true,"CB Viv FG Manu PM":true,"CB Vivinter FG Manufacture":false,"CB Vivinter Oteline PM":true,"CB Vivinter Oteline":false,"CB Helium PM":true,"CB Helium":false,"CB Henner PM":true,"CB Henner":false,"Dynalis Sanofi PM":true,"Dynalis Sanofi":false,"Kalixia":true,"KX Génération Dassault":true,"KX Aon Stellantis PM":true,"KX Ipeca Airbus":true,"KX AON Stellantis":false,"KX Assainissemt Non Cadre PM":true,"KX Assainissement NON CADRE":false,"KX Saint Gobain PM":true,"KX Saint Gobain":false,"KX Helium":true,"Itelis":true,"IT AG2R":true,"IT AON Systra":true,"IT Mercer LV":true,"IT CGRM":true,"IT Colonna":true,"IT Génération":true,"IT AON Mutuelle Nuoma":true,"It Génération Deloitte PM":true,"IT Génération Deloitte":false,"It Génération Deloitte":false,"IT Helium":true,"IT Helium Devoteam":true,"IT Vivinter":true,"IT Vivinter TF1 PM":true,"IT Vivinter TF1":false,"IT Viv CapG PM":true,"IT Viv Capgemini":false,"IT Vivinter Dior":false,"It Vivinter Dior PM":true,"IT Henner Emeria":true,"It Henner Orange":false,"It Henner Orange PM":true,"IT WTW Brico Depot":false,"IT WTW Brico Depot PM":true,"IT WTW Castorama PM":true,"IT WTW Castorama":false,"IT WTW Bouygues":false,"IT WTW Bouygues PM":true,"IT WTW Ubisoft":true,"Oxantis":true,"Ox Harmonie Naval PM":true,"Oxantis Harmonie Naval Group":false,"Oxantis Safran":true,"Sévéane Korelio":true,"SC":true,"SC Framatome":true,"SC Véolia Water Tech Zone":true,"SC Delifrance":true,"SC Helium":true,"SC JTEKT":true,"IS Hazardous W Cadre et NON Cad":true,"ISanté WTW Assainissement CADRE":true,"ISanté WTW Véolia Régime Groupe":true,"IS WTW Véolia Energie Perf et D":true,"Viamedis":true,"VMAltran":true,"SC P2 Access":true,"SC P2 Premium":true,"P3 Access ou Forfait Access":true,"P3 Premium ou Forfait Premium":true,"SC MNPAF":true,"100% Santé":true};
+const PRECOS_GLOSSAIRE_V2 = {"categories":[{"title":"Verres unifocaux","rows":[{"seiko":"Sphérique HD","hoya":"TF Hilux"},{"seiko":"Asphérique HD","hoya":"TF Nulux"},{"seiko":"AZ HD","hoya":""},{"seiko":"Smartzoom","hoya":"Sync III"},{"seiko":"Indi-SV","hoya":"Nulux Identity V+"},{"seiko":"I-Xceed","hoya":"Nulux Identity V+ Eyegenius"}]},{"title":"Verres progressifs","rows":[{"seiko":"Vision X","hoya":"Amplitude Plus"},{"seiko":"Synergy Xtra","hoya":"Daynamic"},{"seiko":"Synergy Xtra Xceed","hoya":""},{"seiko":"Emblem XTW","hoya":"Lifestyle V+"},{"seiko":"Superior","hoya":"Balansis i"},{"seiko":"Superior Xceed","hoya":"Lifestyle 3i"},{"seiko":"Prime Xceed","hoya":"Lifestyle 4i"},{"seiko":"Brilliance X","hoya":""},{"seiko":"Brilliance Xceed","hoya":"Myself"}]},{"title":"Traitements","rows":[{"seiko":"SCC","hoya":"SHV"},{"seiko":"SRC","hoya":"HVLL"},{"seiko":"SRC-UV","hoya":"HVLL UV Control"},{"seiko":"SRB","hoya":"HVLL Blue Control"},{"seiko":"SRB-UV","hoya":"HVLL Blue UVC"},{"seiko":"IP+","hoya":"UV2.0"}]}],"notes":["Photochromique : Sensity","Verres dégressifs : Computer","Verres progressifs d'intérieur : Indoor"]};
 const RA_DEFAULT_DATA = [{"mutuelle":"Apgis / Dynalis","ra":"Pas besoin de l'ancienne ordo","double":"2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Carte Blanche Générali","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 seul TP, le client doit avancer les frais sur le 2è équipement - 2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Carte Blanche GMC","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"no SS suffit","comment":""},{"mutuelle":"Carte Blanche Gras Savoye","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 seul TP, le client doit avancer les frais sur le 2è équipement - 2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Carte Blanche Mercer","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"no SS suffit","comment":""},{"mutuelle":"Carte Blanche Pacifica","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"no SS suffit","comment":""},{"mutuelle":"CB Génération","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"","carte":"","comment":""},{"mutuelle":"Génération","ra":"Ancienne ordo pour dérogation","double":"","carte":"Oui","comment":""},{"mutuelle":"Itelis Colonna","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"Oui","comment":""},{"mutuelle":"Itelis CPMS","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"Oui","comment":""},{"mutuelle":"Itelis Génération","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"Oui","comment":""},{"mutuelle":"Itelis Gras Savoye","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 selection avec les 2 paires sur Cosium - Traitement manuel délai 15 jours","carte":"Oui no contrat + adhérent","comment":""},{"mutuelle":"Itelis Mercer","ra":"Ancienne ordo pour dérogation (délai +) + CM","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM","carte":"Oui","comment":""},{"mutuelle":"Itelis MIP","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"2 sélections sur le même dossier Cosium","carte":"Oui","comment":""},{"mutuelle":"Itelis Sogarep","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"2 sélections sur le même dossier Cosium - Délai très long car traitement manuel + CM (le 1er dossier doit etre facturé pour avoir l'accord sur le 2è)","carte":"Oui","comment":""},{"mutuelle":"Itelis Vivinter","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"Oui - no de contrat","comment":""},{"mutuelle":"Oxantis","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":"Harmonie Mutuelle que 1 TP pour VL/VP le client doit avancer les frais sur le 1er"},{"mutuelle":"Itelis Henner","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":"que 1 TP pour VL/VP le client doit avancer les frais sur le 1er"},{"mutuelle":"Santéclair","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"1 selection avec les 2 paires sur Cosium","carte":"Oui","comment":""},{"mutuelle":"SC MNPAF","ra":"Ancienne ordo pour dérogation (délai +++) + CM","double":"1 selection avec les 2 paires sur Cosium","carte":"Oui","comment":"rbst de 30€ sur la monture si équipement de moins de 2 ans meme si changement de correction !"},{"mutuelle":"Sévéane","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 selection avec les 2 paires sur Cosium","carte":"no contrat/ adhérent","comment":""},{"mutuelle":"Viamedis AON","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Viamedis Gras Savoye","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"","carte":"","comment":""},{"mutuelle":"Viamedis Ipeca (à vérifier)","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 selection avec les 2 paires sur Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Viamedis Apicil (à vérifier)","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"1 selection avec les 2 paires sur Cosium","carte":"no SS suffit","comment":"Remboursement que sur 1 équipement pour 1 VL/VP même Hors TP, le client ne sera pas remboursé"},{"mutuelle":"Viamedis Malakoff Humanis","ra":"Pas besoin de l'ancienne ordo - RA à indiquer sur le dossier Cosium","double":"2 sélections sur le même dossier Cosium","carte":"no SS suffit","comment":""},{"mutuelle":"Viamedis Vivinter","ra":"Ancienne ordo pour dérogation","double":"","carte":"","comment":""}];
 
 function normalize(str){
@@ -4081,6 +4130,48 @@ precosTypeFilter.querySelectorAll('.precos-type-btn').forEach(btn => {
   });
 });
 
+/* Glossaire de correspondance verres/traitements (HOYA <-> Seiko) */
+const glossaireToggleBtn = document.getElementById('glossaireToggleBtn');
+const glossairePanel = document.getElementById('glossairePanel');
+let glossaireRendered = false;
+
+function renderGlossaire(){
+  if(glossaireRendered) return;
+  const categoriesHtml = PRECOS_GLOSSAIRE_V2.categories.map(cat => `
+    <div class="glossaire-category">
+      <div class="glossaire-category-title">${escapeHtml(cat.title)}</div>
+      <div class="glossaire-columns">
+        <div class="glossaire-col-header seiko">SEIKO</div>
+        <div class="glossaire-col-spacer"></div>
+        <div class="glossaire-col-header hoya">HOYA</div>
+      </div>
+      ${cat.rows.map(r => `
+        <div class="glossaire-pair">
+          <div class="glossaire-box">${escapeHtml(r.seiko)}</div>
+          <div class="glossaire-arrow">→</div>
+          <div class="glossaire-box${r.hoya ? '' : ' empty'}">${r.hoya ? escapeHtml(r.hoya) : '—'}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  const notesHtml = PRECOS_GLOSSAIRE_V2.notes.map(n => {
+    const parts = n.split(' : ');
+    return `<div>${parts.length===2 ? `<strong>${escapeHtml(parts[0])}</strong> : ${escapeHtml(parts[1])}` : escapeHtml(n)}</div>`;
+  }).join('');
+  glossairePanel.innerHTML = `
+    <div class="glossaire-title">Équivalences Seiko / Hoya</div>
+    <div class="glossaire-categories">${categoriesHtml}</div>
+    <div class="glossaire-notes">${notesHtml}</div>
+  `;
+  glossaireRendered = true;
+}
+
+glossaireToggleBtn.addEventListener('click', () => {
+  const showing = glossairePanel.style.display !== 'none';
+  if(!showing) renderGlossaire();
+  glossairePanel.style.display = showing ? 'none' : 'block';
+});
+
 function renderPrecosResults(){
   const reseau = precosReseauSelect.value;
   const mutuelle = precosMutuelleSelect.value;
@@ -4114,6 +4205,15 @@ function renderPrecosResults(){
   rows.forEach(r => {
     const cat = r[2] || 'Autres';
     (groups[cat] = groups[cat] || []).push(r);
+  });
+
+  // Règle de rangement : les verres dont le nom commence par "FR" apparaissent
+  // en premier dans chaque groupe (tri stable, l'ordre reste inchangé sinon).
+  Object.keys(groups).forEach(cat => {
+    groups[cat] = groups[cat]
+      .map((r, i) => ({ r, i, fr: normalize(r[3]).startsWith('fr') ? 0 : 1 }))
+      .sort((a, b) => a.fr - b.fr || a.i - b.i)
+      .map(x => x.r);
   });
 
   let html = '';
@@ -5021,8 +5121,8 @@ const COTEB_SHEET_RECIPES = {
   'CEVIDENTIA':      { sku:1, marque:null, modele:2, couleur:3, taille:4, coteb:6, fixedMarque:'Cevidentia' },
   'LUXO':            { sku:null, marque:4, modele:1, couleur:3, taille:2, coteb:6 },
   'PACIFIC':         { sku:1, marque:2, modele:3, couleur:4, taille:5, coteb:7 },
-  'FRENCH RETRO':    { sku:2, marque:3, modele:4, couleur:5, taille:6, coteb:8 },
-  'WHISTLER HILLS':  { sku:1, marque:null, modele:2, couleur:3, taille:null, coteb:4, fixedMarque:'Whistler Hills' },
+  'FRENCH RETRO':    { sku:1, marque:3, modele:4, couleur:5, taille:6, coteb:8 },
+  'WHISTLER HILLS':  { sku:1, marque:2, modele:3, couleur:4, taille:5, coteb:7, fixedMarque:'Whistler Hills' },
   'ATLANT':          { sku:1, marque:6, modele:2, couleur:3, taille:4, coteb:7 },
   'FERRARI':         { sku:1, marque:5, modele:2, couleur:4, taille:3, coteb:7 },
   'Gigi':            { sku:1, marque:null, modele:2, couleur:3, taille:4, coteb:6, fixedMarque:'Gigi' },
@@ -5030,6 +5130,18 @@ const COTEB_SHEET_RECIPES = {
   'DEMETZ  LAPO':    { sku:1, marque:2, modele:3, couleur:4, taille:5, coteb:7 },
   'MINIMA':          { sku:1, marque:null, modele:2, couleur:3, taille:4, coteb:6, fixedMarque:'Minima' },
   'ETNIA':           { sku:null, marque:null, modele:1, couleur:null, taille:null, coteb:2, fixedMarque:'Etnia' },
+  'OZED':            { sku:null, marque:null, modele:1, couleur:null, taille:null, coteb:2, fixedMarque:'Ozed' },
+};
+
+// Certains onglets contiennent DEUX tableaux différents empilés dans la même feuille,
+// avec un second en-tête au milieu et un jeu de colonnes différent (ex. Whistler Hills).
+// Recette du 2e bloc, déclenchée quand la 1ère cellule d'une ligne correspond à un des
+// libellés listés dans "secondHeaderTriggers" du recipe principal.
+const COTEB_SECOND_BLOCK_RECIPES = {
+  'WHISTLER HILLS': {
+    triggers: ['code article'], // texte (normalisé) de la 1ère cellule qui signale le 2e en-tête
+    recipe: { sku:1, marque:null, modele:2, couleur:null, taille:4, coteb:7, fixedMarque:'Whistler Hills' },
+  },
 };
 
 function coteBGetCell(ws, row, col){
@@ -5043,31 +5155,64 @@ function coteBParseNum(v){
   if(typeof v === 'string'){ const f = parseFloat(v.replace(',','.').trim()); if(!isNaN(f)) return f; }
   return null;
 }
+function coteBNormText(v){
+  return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+function coteBExtractRows(ws, sheetName, recipe, startRow, endRow, flat){
+  let used = 0, skipped = 0;
+  for(let r=startRow; r<=endRow; r++){
+    const coteb = coteBParseNum(coteBGetCell(ws, r, recipe.coteb));
+    if(coteb === null){ skipped++; continue; }
+    const marque = recipe.fixedMarque || (recipe.marque ? String(coteBGetCell(ws,r,recipe.marque)||'').trim() : '') || sheetName.trim();
+    const modele = recipe.modele ? String(coteBGetCell(ws,r,recipe.modele)||'').trim() : '';
+    const sku = recipe.sku ? String(coteBGetCell(ws,r,recipe.sku)||'').trim() : '';
+    const couleur = recipe.couleur ? String(coteBGetCell(ws,r,recipe.couleur)||'').trim() : '';
+    const taille = recipe.taille ? String(coteBGetCell(ws,r,recipe.taille)||'').trim() : '';
+    if(!marque && !modele){ skipped++; continue; }
+    flat.push([marque, modele, sku, couleur, taille, coteb]);
+    used++;
+  }
+  return { used, skipped };
+}
 
 function convertCoteBWorkbook(wb){
   const flat = [];
   let sheetsUsed = 0, skippedRows = 0;
   const unknownSheets = [];
   wb.SheetNames.forEach(sheetName => {
-    const recipe = COTEB_SHEET_RECIPES[sheetName.trim()];
+    const trimmed = sheetName.trim();
+    const recipe = COTEB_SHEET_RECIPES[trimmed];
     if(!recipe){ unknownSheets.push(sheetName); return; }
     const ws = wb.Sheets[sheetName];
     if(!ws || !ws['!ref']) return;
     const range = XLSX.utils.decode_range(ws['!ref']);
     const maxRow = range.e.r + 1;
-    let used = 0;
-    for(let r=2; r<=maxRow; r++){
-      const coteb = coteBParseNum(coteBGetCell(ws, r, recipe.coteb));
-      if(coteb === null){ skippedRows++; continue; }
-      const marque = recipe.fixedMarque || (recipe.marque ? String(coteBGetCell(ws,r,recipe.marque)||'').trim() : '') || sheetName.trim();
-      const modele = recipe.modele ? String(coteBGetCell(ws,r,recipe.modele)||'').trim() : '';
-      const sku = recipe.sku ? String(coteBGetCell(ws,r,recipe.sku)||'').trim() : '';
-      const couleur = recipe.couleur ? String(coteBGetCell(ws,r,recipe.couleur)||'').trim() : '';
-      const taille = recipe.taille ? String(coteBGetCell(ws,r,recipe.taille)||'').trim() : '';
-      if(!marque && !modele){ skippedRows++; continue; }
-      flat.push([marque, modele, sku, couleur, taille, coteb]);
-      used++;
+
+    const secondBlock = COTEB_SECOND_BLOCK_RECIPES[trimmed];
+    let endOfFirstBlock = maxRow;
+    let secondHeaderRow = null;
+
+    if(secondBlock){
+      for(let r=2; r<=maxRow; r++){
+        const cellText = coteBNormText(coteBGetCell(ws, r, 1));
+        if(secondBlock.triggers.indexOf(cellText) >= 0){
+          endOfFirstBlock = r - 1;
+          secondHeaderRow = r;
+          break;
+        }
+      }
     }
+
+    let used = 0;
+    const r1 = coteBExtractRows(ws, trimmed, recipe, 2, endOfFirstBlock, flat);
+    used += r1.used; skippedRows += r1.skipped;
+
+    if(secondHeaderRow){
+      const r2 = coteBExtractRows(ws, trimmed, secondBlock.recipe, secondHeaderRow + 1, maxRow, flat);
+      used += r2.used; skippedRows += r2.skipped;
+    }
+
     if(used) sheetsUsed++;
   });
   return { flat, sheetsUsed, skippedRows, unknownSheets };
