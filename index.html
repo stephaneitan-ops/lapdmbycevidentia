@@ -337,6 +337,31 @@
   .modal-success{background:#E7F0EA;color:var(--teal-deep);font-size:12.5px;padding:9px 12px;border-radius:7px;margin-bottom:12px;display:none;}
   .modal-success.show{display:block;}
 
+  /* Dépôt Fiche Atelier / SAV */
+  #viewAtelier .day-block{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;background:var(--panel);}
+  #viewAtelier .day-block-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  #viewAtelier .day-block-title{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink);text-transform:capitalize;}
+  #viewAtelier .day-block-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  #viewAtelier .deposit-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #EEF2F8;font-size:13px;color:var(--ink);}
+  #viewAtelier .deposit-row:first-of-type{border-top:none;margin-top:6px;}
+  #viewAtelier .file-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;background:#FAFBFD;margin-top:6px;}
+  #viewAtelier .file-chip .rm{color:var(--error);cursor:pointer;font-size:12px;}
+  #viewAtelier .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;}
+  #viewAtelier .badge-ok{background:#E7F0EA;color:#16A34A;}
+  #viewAtelier .badge-warn{background:#FFE7D8;color:var(--brass);}
+  #viewAtelier .badge-danger{background:#FBEAE5;color:var(--error);}
+  #viewAtelier .badge-neutral{background:#F0F2F6;color:var(--ink-soft);}
+  #viewAtelier .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+  #viewAtelier .stat{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:#FAFBFD;}
+  #viewAtelier .stat .num{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--teal-deep);}
+  #viewAtelier .stat .lbl{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  #viewAtelier table{width:100%;border-collapse:collapse;font-size:13px;}
+  #viewAtelier thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);font-weight:600;border-bottom:1.5px solid var(--line);padding:0 8px 8px;}
+  #viewAtelier tbody td{padding:8px;border-bottom:1px solid #EEF2F8;}
+  #viewAtelier .progress-track{height:7px;border-radius:999px;background:var(--line);overflow:hidden;margin:12px 0 8px;}
+  #viewAtelier .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal-deep),var(--teal));transition:width .2s;}
+  #viewAtelier .atelier-log-line{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+
   .dropzone{
     border:2px dashed var(--line);border-radius:10px;padding:22px;text-align:center;
     font-size:13px;color:var(--ink-soft);margin-bottom:14px;cursor:pointer;transition:border-color .15s;
@@ -614,6 +639,10 @@
       <button class="nav-item" id="tabAdmin" type="button" title="Admin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
         <span>Admin</span>
+      </button>
+      <button class="nav-item" id="tabAtelier" type="button" title="Dépôt Fiche Atelier / SAV">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <span>Dépôt Atelier / SAV</span>
       </button>
     </nav>
   </aside>
@@ -1032,6 +1061,114 @@
     </div>
 
   </div><!-- /viewAdmin -->
+
+  <div id="viewAtelier" style="display:none;">
+
+    <div id="atelierLoginView">
+      <p class="sub" style="margin-bottom:18px;">Réservé aux personnes autorisées à déposer et récupérer les fiches atelier / SAV.</p>
+      <div class="modal-error" id="atelierLoginError">Mot de passe incorrect.</div>
+      <label for="atelierPassword">Mot de passe</label>
+      <input type="password" id="atelierPassword" placeholder="••••••••" style="max-width:280px;">
+      <button class="btn btn-primary" id="atelierLoginBtn" style="width:auto;padding:11px 24px;">Se connecter</button>
+    </div>
+
+    <div id="atelierMainView" style="display:none;">
+
+      <div class="admin-card" style="margin-bottom:20px;">
+        <h2>Vérifier une fiche précise</h2>
+        <p class="sub">Recherche un numéro de job pour confirmer qu'il a bien été reçu, y compris un jour précédent déjà fusionné.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="atelierSearchInput" placeholder="Ex. J101055210 ou 101055210" style="flex:1;min-width:220px;">
+          <button class="btn btn-ghost" id="atelierSearchBtn" style="width:auto;margin-top:0;padding:11px 18px;">Rechercher</button>
+        </div>
+        <div id="atelierSearchResult" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="admin-card" style="margin-bottom:20px;">
+        <h2>1. Déposer des fiches</h2>
+        <p class="sub">Chaque personne peut déposer à son propre moment dans la journée. Précise le jour concerné si tu déposes en retard ou en avance — les dépôts de jours différents ne se mélangent jamais entre eux.</p>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+          <div style="flex:2;min-width:200px;">
+            <label for="atelierDepositorInput">Déposé par (optionnel)</label>
+            <input type="text" id="atelierDepositorInput" placeholder="Ex. Julie">
+          </div>
+          <div style="flex:1;min-width:160px;">
+            <label for="atelierDayInput">Jour de dépôt</label>
+            <input type="date" id="atelierDayInput">
+          </div>
+        </div>
+
+        <div class="modal-error" id="atelierDepositError"></div>
+
+        <div class="dropzone" id="atelierDropzone">
+          <div>Glissez des fichiers PDF ici, ou cliquez pour les choisir</div>
+          <div class="file-name" id="atelierDzText"></div>
+          <input type="file" id="atelierFileInput" accept="application/pdf" multiple>
+        </div>
+
+        <div id="atelierFileList"></div>
+
+        <button class="btn btn-primary" id="atelierAddDepositBtn" style="width:auto;padding:11px 22px;margin-top:14px;" disabled>Ajouter au dépôt de ce jour</button>
+      </div>
+
+      <div class="admin-card" id="atelierPoolCard" style="margin-bottom:20px;display:none;">
+        <h2>2. Jours en attente de fusion</h2>
+        <p class="sub">La fusion automatique a lieu chaque matin à 9h30 pour le jour clôturé la veille. Un jour non encore fusionné reste séparé — un nouveau jour de dépôt n'y ajoute rien. Tu peux aussi forcer la fusion manuellement.</p>
+        <div id="atelierPoolList"></div>
+        <div id="atelierProgressWrap" style="display:none;">
+          <div class="progress-track"><div class="progress-fill" id="atelierProgressFill"></div></div>
+          <div class="atelier-log-line" id="atelierLogLine">—</div>
+        </div>
+      </div>
+
+      <div id="atelierResults" style="display:none;">
+        <div class="admin-card" style="margin-bottom:20px;">
+          <h2>3. Résultat de la fusion</h2>
+          <p class="sub">Vérifie le résumé avant de télécharger — les fiches sans numéro et les fiches SAV sont placées en tête, suivies des jobs classés par ordre croissant.</p>
+          <div class="summary-grid" id="atelierSummaryGrid"></div>
+          <div class="modal-success show" id="atelierOrderFlagOk" style="display:none;">✓ Ordre croissant vérifié sur les jobs numériques.</div>
+          <div class="modal-error show" id="atelierOrderFlagBad" style="display:none;">✗ Anomalie détectée dans l'ordre — à vérifier avant envoi.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:8px;">
+            <div style="font-size:13px;color:var(--ink-soft);">Fichier de sortie : <b id="atelierOutName" style="color:var(--ink);font-family:'IBM Plex Mono',monospace;">—</b></div>
+            <button class="btn btn-primary" id="atelierDownloadBtn" style="width:auto;padding:11px 22px;">Télécharger le PDF trié</button>
+          </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom:20px;">
+          <h2>Détail page par page</h2>
+          <p class="sub">Ordre final dans le PDF fusionné.</p>
+          <table>
+            <thead><tr><th style="width:32px;">#</th><th>Job détecté</th><th>Fichier source</th><th>Page</th><th>Statut</th></tr></thead>
+            <tbody id="atelierDetailBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-bottom:20px;">
+        <h2>Journal — jours déjà fusionnés</h2>
+        <p class="sub">Les fichiers PDF sont purgés après téléchargement ; seule cette liste reste conservée indéfiniment pour retrouver qui a déposé quoi et si un job a bien été reçu tel jour.</p>
+        <div id="atelierArchiveLog"><div class="sub" id="atelierArchiveEmpty">Aucun jour fusionné pour le moment.</div></div>
+      </div>
+
+      <div class="admin-card" id="atelierPwChangeCard" style="max-width:420px;margin-bottom:20px;">
+        <h2>Changer le mot de passe Atelier</h2>
+        <p class="sub">Indépendant du mot de passe Admin — initialisé sur la même valeur au premier accès, mais modifiable séparément ici.</p>
+        <div class="modal-error" id="atelierPwChangeError"></div>
+        <div class="modal-success" id="atelierPwChangeSuccess"></div>
+        <label for="atelierPwOld">Mot de passe actuel</label>
+        <input type="password" id="atelierPwOld" placeholder="••••••••">
+        <label for="atelierPwNew">Nouveau mot de passe</label>
+        <input type="password" id="atelierPwNew" placeholder="Au moins 6 caractères">
+        <label for="atelierPwNew2">Confirmer le nouveau mot de passe</label>
+        <input type="password" id="atelierPwNew2" placeholder="••••••••">
+        <button class="btn btn-primary" id="atelierPwChangeBtn" style="width:auto;padding:11px 22px;">Changer le mot de passe</button>
+      </div>
+
+      <button class="btn-ghost" id="atelierLogoutBtn">Se déconnecter</button>
+    </div>
+
+  </div><!-- /viewAtelier -->
 
   </div><!-- /wrap -->
 
@@ -4490,6 +4627,542 @@ if(pwChangeBtn){
   });
 }
 
+/* ============ DÉPÔT FICHE ATELIER / SAV ============ */
+const ATELIER_API = '/.netlify/functions/atelier';
+const ATELIER_PASSWORD_FALLBACK = 'Atelier2026'; // repli local, utilisé uniquement quand l'API serveur n'est pas déployée (tests dans Claude)
+let CURRENT_ATELIER_PASSWORD = null;
+
+const atelierLoginView = document.getElementById('atelierLoginView');
+const atelierMainView = document.getElementById('atelierMainView');
+const atelierPassword = document.getElementById('atelierPassword');
+const atelierLoginBtn = document.getElementById('atelierLoginBtn');
+const atelierLoginError = document.getElementById('atelierLoginError');
+const atelierLogoutBtn = document.getElementById('atelierLogoutBtn');
+
+function resetAtelierToLogin(){
+  atelierLoginView.style.display = 'block';
+  atelierMainView.style.display = 'none';
+  atelierPassword.value = '';
+  atelierLoginError.classList.remove('show');
+  CURRENT_ATELIER_PASSWORD = null;
+}
+
+async function verifyAtelierPassword(pw){
+  try{
+    const res = await fetch(REMOTE_AUTH_API, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'verify', password: pw, scope: 'atelier' })
+    });
+    if(res.status !== 200 && res.status !== 401){ throw new Error('Réponse serveur inattendue (' + res.status + ')'); }
+    const json = await res.json();
+    if(typeof json.ok !== 'boolean'){ throw new Error('Réponse serveur invalide'); }
+    return { ok: json.ok, remote: true };
+  } catch(e){
+    return { ok: pw === ATELIER_PASSWORD_FALLBACK, remote: false };
+  }
+}
+
+atelierLoginBtn.addEventListener('click', async () => {
+  const pw = atelierPassword.value;
+  atelierLoginBtn.disabled = true;
+  atelierLoginBtn.textContent = 'Connexion…';
+  const result = await verifyAtelierPassword(pw);
+  atelierLoginBtn.disabled = false;
+  atelierLoginBtn.textContent = 'Se connecter';
+  if(result.ok){
+    CURRENT_ATELIER_PASSWORD = pw;
+    atelierLoginView.style.display = 'none';
+    atelierMainView.style.display = 'block';
+    atelierRenderPool();
+  } else {
+    atelierLoginError.classList.add('show');
+  }
+});
+atelierPassword.addEventListener('keydown', (e) => { if(e.key==='Enter') atelierLoginBtn.click(); });
+atelierLogoutBtn.addEventListener('click', () => { resetAtelierToLogin(); });
+
+/* Changer le mot de passe Atelier (indépendant de l'Admin, même mécanisme) */
+const atelierPwOld = document.getElementById('atelierPwOld');
+const atelierPwNew = document.getElementById('atelierPwNew');
+const atelierPwNew2 = document.getElementById('atelierPwNew2');
+const atelierPwChangeBtn = document.getElementById('atelierPwChangeBtn');
+const atelierPwChangeError = document.getElementById('atelierPwChangeError');
+const atelierPwChangeSuccess = document.getElementById('atelierPwChangeSuccess');
+
+atelierPwChangeBtn.addEventListener('click', async () => {
+  atelierPwChangeError.classList.remove('show');
+  atelierPwChangeSuccess.classList.remove('show');
+  if(!atelierPwOld.value || !atelierPwNew.value || !atelierPwNew2.value){
+    atelierPwChangeError.textContent = 'Merci de remplir les trois champs.';
+    atelierPwChangeError.classList.add('show');
+    return;
+  }
+  if(atelierPwNew.value !== atelierPwNew2.value){
+    atelierPwChangeError.textContent = 'Le nouveau mot de passe et sa confirmation ne correspondent pas.';
+    atelierPwChangeError.classList.add('show');
+    return;
+  }
+  if(atelierPwNew.value.length < 6){
+    atelierPwChangeError.textContent = 'Le nouveau mot de passe doit contenir au moins 6 caractères.';
+    atelierPwChangeError.classList.add('show');
+    return;
+  }
+  atelierPwChangeBtn.disabled = true;
+  atelierPwChangeBtn.textContent = 'Modification…';
+  try{
+    const res = await fetch(REMOTE_AUTH_API, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'change', oldPassword: atelierPwOld.value, newPassword: atelierPwNew.value, scope: 'atelier' })
+    });
+    const json = await res.json();
+    if(!res.ok || !json.ok){
+      atelierPwChangeError.textContent = json.error || 'Impossible de changer le mot de passe.';
+      atelierPwChangeError.classList.add('show');
+      return;
+    }
+    atelierPwChangeSuccess.textContent = 'Mot de passe modifié avec succès. Vous allez être déconnecté — reconnectez-vous avec le nouveau mot de passe.';
+    atelierPwChangeSuccess.classList.add('show');
+    atelierPwOld.value = ''; atelierPwNew.value = ''; atelierPwNew2.value = '';
+    setTimeout(() => { resetAtelierToLogin(); }, 2000);
+  } catch(err){
+    atelierPwChangeError.textContent = "Impossible de contacter l'API. Cette fonctionnalité nécessite que le site soit déployé sur Netlify avec les fonctions serveur actives.";
+    atelierPwChangeError.classList.add('show');
+  } finally {
+    atelierPwChangeBtn.disabled = false;
+    atelierPwChangeBtn.textContent = 'Changer le mot de passe';
+  }
+});
+
+/* ---- Chargement à la demande de pdf.js et pdf-lib (comme Human.js pour la PDM) ---- */
+let atelierLibsPromise = null;
+function atelierLoadLibs(){
+  if(atelierLibsPromise) return atelierLibsPromise;
+  atelierLibsPromise = new Promise((resolve, reject) => {
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s1.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+      s2.onload = () => resolve();
+      s2.onerror = () => reject(new Error("La librairie de fusion PDF n'a pas pu être chargée."));
+      document.head.appendChild(s2);
+    };
+    s1.onerror = () => reject(new Error("La librairie de lecture PDF n'a pas pu être chargée."));
+    document.head.appendChild(s1);
+  });
+  return atelierLibsPromise;
+}
+
+/* ---- Dépôt (sélection en cours, pas encore envoyée) ---- */
+let atelierPendingFiles = [];
+const atelierDropzone = document.getElementById('atelierDropzone');
+const atelierFileInput = document.getElementById('atelierFileInput');
+const atelierFileListEl = document.getElementById('atelierFileList');
+const atelierAddDepositBtn = document.getElementById('atelierAddDepositBtn');
+const atelierDepositError = document.getElementById('atelierDepositError');
+const atelierDepositorInput = document.getElementById('atelierDepositorInput');
+const atelierDayInput = document.getElementById('atelierDayInput');
+
+function atelierTodayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+atelierDayInput.value = atelierTodayStr();
+
+function atelierFormatDayLabel(dayStr){
+  const d = new Date(dayStr + 'T00:00:00');
+  return d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+}
+
+atelierDropzone.addEventListener('click', () => atelierFileInput.click());
+atelierDropzone.addEventListener('dragover', (e) => { e.preventDefault(); atelierDropzone.classList.add('drag'); });
+atelierDropzone.addEventListener('dragleave', () => atelierDropzone.classList.remove('drag'));
+atelierDropzone.addEventListener('drop', (e) => {
+  e.preventDefault(); atelierDropzone.classList.remove('drag');
+  atelierAddFiles([...e.dataTransfer.files]);
+});
+atelierFileInput.addEventListener('change', () => { atelierAddFiles([...atelierFileInput.files]); atelierFileInput.value=''; });
+
+function atelierAddFiles(files){
+  files.forEach(f => {
+    if(f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')){
+      atelierPendingFiles.push({ file: f, id: crypto.randomUUID() });
+    }
+  });
+  atelierRenderFileList();
+}
+
+function atelierRenderFileList(){
+  atelierFileListEl.innerHTML = '';
+  atelierPendingFiles.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'file-chip';
+    row.innerHTML = `<span>${item.file.name} <span style="color:var(--ink-soft);">(${(item.file.size/1024).toFixed(0)} Ko)</span></span><span class="rm" data-id="${item.id}">Retirer</span>`;
+    atelierFileListEl.appendChild(row);
+  });
+  atelierFileListEl.querySelectorAll('.rm').forEach(el => {
+    el.addEventListener('click', () => {
+      atelierPendingFiles = atelierPendingFiles.filter(f => f.id !== el.dataset.id);
+      atelierRenderFileList();
+    });
+  });
+  atelierAddDepositBtn.disabled = atelierPendingFiles.length === 0;
+}
+
+function atelierFileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1]);
+    r.onerror = () => reject(new Error('Lecture du fichier impossible.'));
+    r.readAsDataURL(file);
+  });
+}
+
+atelierAddDepositBtn.addEventListener('click', async () => {
+  if(atelierPendingFiles.length === 0) return;
+  atelierDepositError.classList.remove('show');
+  atelierAddDepositBtn.disabled = true;
+  atelierAddDepositBtn.textContent = 'Envoi en cours…';
+  const day = atelierDayInput.value || atelierTodayStr();
+  const batchId = crypto.randomUUID();
+  const depositor = atelierDepositorInput.value.trim() || 'Non renseigné';
+  try{
+    for(const item of atelierPendingFiles){
+      const base64 = await atelierFileToBase64(item.file);
+      const res = await fetch(ATELIER_API, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'deposit', password: CURRENT_ATELIER_PASSWORD, day, batchId, depositor, filename: item.file.name, base64 })
+      });
+      const json = await res.json();
+      if(!res.ok || !json.ok) throw new Error(json.error || 'Échec de l\'envoi.');
+    }
+    atelierPendingFiles = [];
+    atelierDepositorInput.value = '';
+    atelierDayInput.value = atelierTodayStr();
+    atelierRenderFileList();
+    await atelierRenderPool();
+  } catch(err){
+    atelierDepositError.textContent = err.message || "Impossible de contacter l'API. Cette fonctionnalité nécessite que le site soit déployé sur Netlify avec les fonctions serveur actives.";
+    atelierDepositError.classList.add('show');
+  } finally {
+    atelierAddDepositBtn.disabled = atelierPendingFiles.length === 0;
+    atelierAddDepositBtn.textContent = 'Ajouter au dépôt de ce jour';
+  }
+});
+
+/* ---- Jours en attente (récupérés depuis le serveur) ---- */
+const atelierPoolCard = document.getElementById('atelierPoolCard');
+const atelierPoolList = document.getElementById('atelierPoolList');
+let atelierLastPool = {};
+
+async function atelierRenderPool(){
+  try{
+    const res = await fetch(`${ATELIER_API}?action=pool&password=${encodeURIComponent(CURRENT_ATELIER_PASSWORD)}`);
+    const json = await res.json();
+    if(!res.ok || !json.ok) throw new Error(json.error || 'Impossible de charger les dépôts en attente.');
+    atelierLastPool = json.days || {};
+  } catch(e){
+    atelierLastPool = {};
+  }
+
+  const days = Object.keys(atelierLastPool).sort();
+  atelierPoolCard.style.display = days.length ? 'block' : 'none';
+  atelierPoolList.innerHTML = '';
+
+  days.forEach(day => {
+    const batches = atelierLastPool[day];
+    const totalFiles = batches.reduce((s,b) => s + b.files.length, 0);
+    const block = document.createElement('div');
+    block.className = 'day-block';
+    const depRows = batches.map(b => {
+      const t = new Date(b.time);
+      const hh = String(t.getHours()).padStart(2,'0');
+      const mn = String(t.getMinutes()).padStart(2,'0');
+      return `<div class="deposit-row"><span>${b.depositor} — ${b.files.length} fichier(s)</span><span style="color:var(--ink-soft);">${hh}:${mn}</span></div>`;
+    }).join('');
+    block.innerHTML = `
+      <div class="day-block-head">
+        <div>
+          <div class="day-block-title">${atelierFormatDayLabel(day)}</div>
+          <div class="day-block-meta">${batches.length} dépôt(s) — ${totalFiles} fichier(s) au total</div>
+        </div>
+        <button class="btn btn-primary atelier-day-merge" data-day="${day}" style="width:auto;padding:10px 18px;">Fusionner ce jour</button>
+      </div>
+      ${depRows}
+    `;
+    atelierPoolList.appendChild(block);
+  });
+
+  atelierPoolList.querySelectorAll('.atelier-day-merge').forEach(btn => {
+    btn.addEventListener('click', () => atelierRunPipeline(btn.dataset.day));
+  });
+}
+
+/* ---- Extraction, tri, fusion ---- */
+const ATELIER_RE_JOB_FOOTER = /Job\s*n[°o]\s*:\s*J\s*(\d{6,12})/i;
+const ATELIER_RE_JOB_ANY    = /\bJ\s*(\d{6,12})\b/;
+const ATELIER_RE_COLISSIMO  = /colissimo/i;
+
+function atelierSimpleHash(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) | 0; }
+  return h.toString();
+}
+
+function atelierBase64ToBytes(base64){
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function atelierExtractPageRecord(pdfDoc, pageIndex, srcName, origCounter){
+  const page = await pdfDoc.getPage(pageIndex+1);
+  const textContent = await page.getTextContent();
+  const fullText = textContent.items.map(it => it.str).join(' ');
+  const record = { src: srcName, pageIndex, orig: origCounter, text: fullText, isColissimo: ATELIER_RE_COLISSIMO.test(fullText), job: null };
+  if(record.isColissimo) return record;
+  const m = ATELIER_RE_JOB_FOOTER.exec(fullText) || ATELIER_RE_JOB_ANY.exec(fullText);
+  if(m){ record.job = {type:'numeric', value:Number(m[1]), label:'J'+m[1]}; return record; }
+  record.job = {type:'none', value:null, label:'Sans numéro'};
+  return record;
+}
+
+async function atelierRunPipeline(day){
+  const progressWrap = document.getElementById('atelierProgressWrap');
+  const progressFill = document.getElementById('atelierProgressFill');
+  const logLine = document.getElementById('atelierLogLine');
+  progressWrap.style.display = 'block';
+  document.getElementById('atelierResults').style.display = 'none';
+  document.querySelectorAll('.atelier-day-merge').forEach(b => b.disabled = true);
+
+  try{
+    logLine.textContent = 'Chargement des librairies PDF…';
+    await atelierLoadLibs();
+
+    const batches = atelierLastPool[day] || [];
+    const flatFiles = []; // {id, filename, depositor}
+    batches.forEach(b => b.files.forEach(f => flatFiles.push({ id:f.id, filename:f.filename, depositor:b.depositor })));
+
+    const loaded = []; // {name, bytes, pdfjsDoc, pageCount}
+    let counted = 0;
+    for(const item of flatFiles){
+      logLine.textContent = `Téléchargement de ${item.filename}…`;
+      const res = await fetch(`${ATELIER_API}?action=file&password=${encodeURIComponent(CURRENT_ATELIER_PASSWORD)}&id=${encodeURIComponent(item.id)}`);
+      const json = await res.json();
+      if(!res.ok || !json.ok) throw new Error(json.error || `Impossible de récupérer ${item.filename}.`);
+      const bytes = atelierBase64ToBytes(json.base64);
+      const pdfjsDoc = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+      loaded.push({ name: item.filename, bytes, pdfjsDoc, pageCount: pdfjsDoc.numPages });
+      counted++;
+      progressFill.style.width = ((counted/Math.max(flatFiles.length,1))*40) + '%';
+    }
+
+    let records = [];
+    let origCounter = 0;
+    let filesDone = 0;
+    for(const doc of loaded){
+      for(let p=0; p<doc.pageCount; p++){
+        logLine.textContent = `Analyse ${doc.name} — page ${p+1}/${doc.pageCount}`;
+        const rec = await atelierExtractPageRecord(doc.pdfjsDoc, p, doc.name, origCounter++);
+        rec.docRef = doc;
+        records.push(rec);
+      }
+      filesDone++;
+      progressFill.style.width = (40 + (filesDone/Math.max(loaded.length,1))*30) + '%';
+    }
+
+    const colissimoExcluded = records.filter(r => r.isColissimo);
+    records = records.filter(r => !r.isColissimo);
+    const totalInPages = records.length + colissimoExcluded.length;
+
+    const seenHash = new Map();
+    const kept = [];
+    const duplicates = [];
+    records.forEach(r => {
+      const h = atelierSimpleHash(r.text.replace(/\s+/g,' ').trim());
+      if(seenHash.has(h)){ r.wasKept = false; duplicates.push(r); }
+      else { r.wasKept = true; seenHash.set(h, r); kept.push(r); }
+    });
+
+    const frontGroup = kept.filter(r => r.job.type === 'none').sort((a,b) => a.orig - b.orig);
+    const numericGroups = new Map();
+    kept.forEach(r => {
+      if(r.job.type === 'numeric'){
+        if(!numericGroups.has(r.job.value)) numericGroups.set(r.job.value, []);
+        numericGroups.get(r.job.value).push(r);
+      }
+    });
+    const numericKeysSorted = [...numericGroups.keys()].sort((a,b) => a-b);
+    const numericOrdered = [];
+    numericKeysSorted.forEach(k => numericOrdered.push(...numericGroups.get(k)));
+    const finalOrder = [...frontGroup, ...numericOrdered];
+
+    const jobsSeq = finalOrder.filter(r => r.job.type==='numeric').map(r => r.job.value);
+    let isSorted = true;
+    for(let i=0;i<jobsSeq.length-1;i++){ if(jobsSeq[i] > jobsSeq[i+1]){ isSorted = false; break; } }
+
+    logLine.textContent = 'Fusion du PDF final…';
+    progressFill.style.width = '80%';
+
+    const { PDFDocument } = PDFLib;
+    const outDoc = await PDFDocument.create();
+    const srcCache = new Map();
+    for(const doc of loaded){ srcCache.set(doc.name, await PDFDocument.load(doc.bytes)); }
+    for(const r of finalOrder){
+      const plDoc = srcCache.get(r.src);
+      const [copiedPage] = await outDoc.copyPages(plDoc, [r.pageIndex]);
+      outDoc.addPage(copiedPage);
+    }
+    const outBytes = await outDoc.save();
+    progressFill.style.width = '100%';
+    logLine.textContent = `Terminé — ${finalOrder.length} pages fusionnées.`;
+
+    const [yy, mo, da] = day.split('-');
+    const outName = `${da}${mo}-${finalOrder.length}-trié.pdf`;
+
+    atelierRenderResults({ totalInPages, colissimoExcluded, duplicates, frontGroup, numericOrdered, finalOrder, isSorted, outName, outBytes });
+
+    const summary = {
+      dayLabel: atelierFormatDayLabel(day), totalInPages, finalOrderCount: finalOrder.length,
+      numericJobs: numericKeysSorted, frontCount: frontGroup.length,
+      duplicatesCount: duplicates.length, colissimoCount: colissimoExcluded.length,
+      deposits: batches.map(b => ({ depositor: b.depositor, files: b.files.length, time: b.time })),
+    };
+
+    const purgeRes = await fetch(ATELIER_API, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'purge-and-archive', password: CURRENT_ATELIER_PASSWORD, day, summary })
+    });
+    const purgeJson = await purgeRes.json();
+    if(!purgeRes.ok || !purgeJson.ok) throw new Error(purgeJson.error || "La fusion a réussi mais l'archivage a échoué — réessaie ou signale le problème.");
+
+    atelierRenderArchiveEntry({ ...summary, mergedAt: new Date() });
+    await atelierRenderPool();
+
+    // Téléchargement automatique du PDF fusionné
+    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = outName;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+
+  } catch(err){
+    logLine.textContent = 'Erreur : ' + (err.message || 'échec de la fusion.');
+  } finally {
+    setTimeout(() => { progressWrap.style.display = 'none'; }, 800);
+    document.querySelectorAll('.atelier-day-merge').forEach(b => b.disabled = false);
+  }
+}
+
+function atelierRenderResults(data){
+  const {totalInPages, duplicates, frontGroup, numericOrdered, finalOrder, isSorted, outName, outBytes} = data;
+  document.getElementById('atelierResults').style.display = 'block';
+  document.getElementById('atelierSummaryGrid').innerHTML = `
+    <div class="stat"><div class="num">${totalInPages}</div><div class="lbl">Pages reçues</div></div>
+    <div class="stat"><div class="num">${finalOrder.length}</div><div class="lbl">Pages fusionnées</div></div>
+    <div class="stat"><div class="num">${frontGroup.length}</div><div class="lbl">Sans numéro (dont SAV)</div></div>
+    <div class="stat"><div class="num">${numericOrdered.length}</div><div class="lbl">Pages job numériques</div></div>
+    <div class="stat"><div class="num">${duplicates.length}</div><div class="lbl">Doublons supprimés</div></div>
+  `;
+  document.getElementById('atelierOrderFlagOk').style.display = isSorted ? 'block' : 'none';
+  document.getElementById('atelierOrderFlagBad').style.display = isSorted ? 'none' : 'block';
+  document.getElementById('atelierOutName').textContent = outName;
+
+  const body = document.getElementById('atelierDetailBody');
+  body.innerHTML = '';
+  finalOrder.forEach((r, i) => {
+    const badge = r.job.type === 'numeric' ? '<span class="badge badge-ok">Job</span>' : '<span class="badge badge-neutral">Sans n°</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${r.job.label}</td><td>${r.src}</td><td>p${r.pageIndex+1}</td><td>${badge}</td>`;
+    body.appendChild(tr);
+  });
+  duplicates.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>—</td><td>${r.job ? r.job.label : '—'}</td><td>${r.src}</td><td>p${r.pageIndex+1}</td><td><span class="badge badge-danger">Doublon retiré</span></td>`;
+    body.appendChild(tr);
+  });
+  data.colissimoExcluded.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>—</td><td>—</td><td>${r.src}</td><td>p${r.pageIndex+1}</td><td><span class="badge badge-danger">Étiquette Colissimo exclue</span></td>`;
+    body.appendChild(tr);
+  });
+
+  document.getElementById('atelierDownloadBtn').onclick = () => {
+    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = outName;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  };
+}
+
+function atelierRenderArchiveEntry(log){
+  const el = document.getElementById('atelierArchiveLog');
+  const empty = document.getElementById('atelierArchiveEmpty');
+  if(empty) empty.style.display = 'none';
+  const depositRows = log.deposits.map(d => {
+    const t = new Date(d.time);
+    const hh = String(t.getHours()).padStart(2,'0');
+    const mn = String(t.getMinutes()).padStart(2,'0');
+    return `<div style="font-size:12.5px;margin-top:4px;">${hh}:${mn} — <b>${d.depositor}</b> (${d.files} fichier(s))</div>`;
+  }).join('');
+  const jobsPreview = log.numericJobs.length ? log.numericJobs.map(j => 'J'+j).join(', ') : '—';
+  const entry = document.createElement('div');
+  entry.style.borderTop = '1px solid var(--line)';
+  entry.style.paddingTop = '12px';
+  entry.style.marginTop = '12px';
+  entry.style.fontSize = '13px';
+  entry.innerHTML = `
+    <div style="text-transform:capitalize;"><b>Jour fusionné :</b> ${log.dayLabel}</div>
+    <div><b>Fusionné le :</b> ${log.mergedAt.toLocaleDateString('fr-FR')} à ${String(log.mergedAt.getHours()).padStart(2,'0')}:${String(log.mergedAt.getMinutes()).padStart(2,'0')}</div>
+    <div><b>Dépôts :</b> ${log.deposits.length}</div>
+    ${depositRows}
+    <div style="margin-top:6px;"><b>Pages reçues :</b> ${log.totalInPages} — <b>Pages fusionnées :</b> ${log.finalOrderCount}</div>
+    <div><b>Sans numéro (dont SAV) :</b> ${log.frontCount} — <b>Doublons :</b> ${log.duplicatesCount} — <b>Colissimo exclues :</b> ${log.colissimoCount}</div>
+    <div style="margin-top:6px;"><b>Jobs numériques :</b></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;word-break:break-all;">${jobsPreview}</div>
+  `;
+  el.prepend(entry);
+}
+
+/* ---- Recherche d'une fiche (interroge le journal archivé côté serveur, tous jours confondus) ---- */
+const atelierSearchInput = document.getElementById('atelierSearchInput');
+const atelierSearchBtn = document.getElementById('atelierSearchBtn');
+atelierSearchBtn.addEventListener('click', atelierSearchJob);
+atelierSearchInput.addEventListener('keydown', (e) => { if(e.key==='Enter') atelierSearchJob(); });
+
+async function atelierSearchJob(){
+  const raw = atelierSearchInput.value.trim();
+  const resultEl = document.getElementById('atelierSearchResult');
+  if(!raw){ resultEl.innerHTML = ''; return; }
+  const digits = raw.replace(/\D/g,'');
+  if(!digits){ resultEl.innerHTML = '<div class="modal-error show">Numéro de job invalide.</div>'; return; }
+  resultEl.innerHTML = '<div class="sub">Recherche…</div>';
+  try{
+    const res = await fetch(`${ATELIER_API}?action=search&password=${encodeURIComponent(CURRENT_ATELIER_PASSWORD)}&job=${encodeURIComponent(digits)}`);
+    const json = await res.json();
+    if(!res.ok || !json.ok) throw new Error(json.error || 'Recherche impossible.');
+    if(!json.matches || json.matches.length === 0){
+      resultEl.innerHTML = `<div class="modal-error show">✗ Aucune fiche avec le job « ${raw} » n'a été retrouvée dans le journal archivé.</div>`;
+      return;
+    }
+    const rows = json.matches.map(m => {
+      const d = new Date(m.mergedAt);
+      return `<div style="font-size:13px;margin-top:4px;">J${digits} — dépôt du <b>${atelierFormatDayLabel(m.day)}</b>, fusionné le ${d.toLocaleDateString('fr-FR')}</div>`;
+    }).join('');
+    resultEl.innerHTML = `<div class="modal-success show">✓ ${json.matches.length} occurrence(s) trouvée(s)</div>${rows}`;
+  } catch(err){
+    resultEl.innerHTML = `<div class="modal-error show">${err.message || "Impossible de contacter l'API."}</div>`;
+  }
+}
+
 /* CSV upload */
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -5566,12 +6239,14 @@ const tabPrecos = document.getElementById('tabPrecos');
 const tabSav = document.getElementById('tabSav');
 const tabRa = document.getElementById('tabRa');
 const tabAdmin = document.getElementById('tabAdmin');
+const tabAtelier = document.getElementById('tabAtelier');
 const viewMontures = document.getElementById('viewMontures');
 const viewPd = document.getElementById('viewPd');
 const viewPrecos = document.getElementById('viewPrecos');
 const viewSav = document.getElementById('viewSav');
 const viewRa = document.getElementById('viewRa');
 const viewAdmin = document.getElementById('viewAdmin');
+const viewAtelier = document.getElementById('viewAtelier');
 const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
 
@@ -5582,6 +6257,7 @@ const TABS = [
   { btn: tabSav, view: viewSav, title: 'SAV Lunettes', subtitle: 'Formulaire de demande au service après-vente C·Evidentia' },
   { btn: tabRa, view: viewRa, title: 'Procédure RA', subtitle: 'RA et double équipement VL/VP par mutuelle' },
   { btn: tabAdmin, view: viewAdmin, title: 'Admin', subtitle: 'Mise à jour des bases montures et préconisations (accès protégé)', onActivate: resetAdminToLogin },
+  { btn: tabAtelier, view: viewAtelier, title: 'Dépôt Fiche Atelier / SAV', subtitle: 'Dépôt, tri et fusion des fiches atelier (accès protégé)', onActivate: resetAtelierToLogin },
 ];
 
 function activateTab(target){
