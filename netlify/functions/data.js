@@ -1,37 +1,12 @@
 // netlify/functions/data.js
 // API générique de stockage clé-valeur pour Tool Box by C·Evidentia.
-// GET  /.netlify/functions/data?key=xxx        -> { value: "..." | null }
-// POST /.netlify/functions/data  { key, value, password } -> { ok: true } (mot de passe requis, vérifié côté serveur)
+// GET  /.netlify/functions/data?key=xxx                          -> { value: "..." | null }
+// POST /.netlify/functions/data  { key, value, password, scope } -> { ok: true }
+// `scope` est optionnel et vaut 'admin' par défaut (rétrocompatible). Les écritures
+// faites depuis l'onglet Dépôt Fiche Atelier / SAV utilisent 'atelier' pour être
+// vérifiées contre le mot de passe atelier plutôt que le mot de passe Admin.
 
-const { getStore } = require('@netlify/blobs');
-const crypto = require('crypto');
-
-const DEFAULT_PASSWORD = 'Teamops2026'; // mot de passe initial ; changeable depuis l'onglet Admin ensuite
-const SITE_ID = '1073646c-ef38-4e99-b77a-2a7aaa928b25'; // Project ID Netlify (lapdmbycevidentia)
-
-// Configuration manuelle du store : nécessaire dans certains contextes de déploiement où
-// Netlify n'injecte pas automatiquement le contexte Blobs. Le jeton est lu depuis une
-// variable d'environnement (Project configuration -> Environment variables -> NETLIFY_BLOBS_TOKEN).
-function blobStore(name) {
-  return getStore({
-    name,
-    siteID: SITE_ID,
-    token: process.env.NETLIFY_BLOBS_TOKEN,
-  });
-}
-
-function hashPw(pw) {
-  return crypto.createHash('sha256').update(String(pw || '')).digest('hex');
-}
-
-async function getStoredHash(authStore) {
-  let hash = await authStore.get('password-hash');
-  if (!hash) {
-    hash = hashPw(DEFAULT_PASSWORD);
-    await authStore.set('password-hash', hash);
-  }
-  return hash;
-}
+const { blobStore, hashPw, getStoredHash } = require('./_shared/auth-shared');
 
 exports.handler = async (event) => {
   const cors = {
@@ -74,13 +49,13 @@ exports.handler = async (event) => {
     } catch (e) {
       return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'JSON invalide.' }) };
     }
-    const { key, value, password } = body;
+    const { key, value, password, scope } = body;
     if (!key) {
       return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "Paramètre 'key' manquant." }) };
     }
 
     const authStore = blobStore('toolbox-auth');
-    const storedHash = await getStoredHash(authStore);
+    const storedHash = await getStoredHash(authStore, scope);
     if (hashPw(password) !== storedHash) {
       return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'Mot de passe incorrect.' }) };
     }
