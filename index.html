@@ -636,13 +636,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span>Procédure RA</span>
       </button>
-      <button class="nav-item" id="tabAdmin" type="button" title="Admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        <span>Admin</span>
-      </button>
       <button class="nav-item" id="tabAtelier" type="button" title="Dépôt Fiche Atelier / SAV">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
         <span>Dépôt Atelier / SAV</span>
+      </button>
+      <button class="nav-item" id="tabAdmin" type="button" title="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>Admin</span>
       </button>
     </nav>
   </aside>
@@ -1057,6 +1057,20 @@
         <button class="btn btn-primary" id="pwChangeBtn" style="width:auto;padding:11px 22px;">Changer le mot de passe</button>
       </div>
 
+      <div class="admin-card" id="atelierPwChangeCard" style="max-width:420px;margin-top:24px;">
+        <h2>Changer le mot de passe Atelier</h2>
+        <p class="sub">Mot de passe de l'onglet "Dépôt Atelier / SAV". Indépendant du mot de passe Admin ci-dessus — initialisé sur la même valeur au premier accès, mais modifiable séparément ici.</p>
+        <div class="modal-error" id="atelierPwChangeError"></div>
+        <div class="modal-success" id="atelierPwChangeSuccess"></div>
+        <label for="atelierPwOld">Mot de passe actuel (Atelier)</label>
+        <input type="password" id="atelierPwOld" placeholder="••••••••">
+        <label for="atelierPwNew">Nouveau mot de passe</label>
+        <input type="password" id="atelierPwNew" placeholder="Au moins 6 caractères">
+        <label for="atelierPwNew2">Confirmer le nouveau mot de passe</label>
+        <input type="password" id="atelierPwNew2" placeholder="••••••••">
+        <button class="btn btn-primary" id="atelierPwChangeBtn" style="width:auto;padding:11px 22px;">Changer le mot de passe</button>
+      </div>
+
       <button class="btn-ghost" id="logoutBtn" style="margin-top:22px;">Se déconnecter</button>
     </div>
 
@@ -1149,20 +1163,6 @@
         <h2>Journal — jours déjà fusionnés</h2>
         <p class="sub">Les fichiers PDF sont purgés après téléchargement ; seule cette liste reste conservée indéfiniment pour retrouver qui a déposé quoi et si un job a bien été reçu tel jour.</p>
         <div id="atelierArchiveLog"><div class="sub" id="atelierArchiveEmpty">Aucun jour fusionné pour le moment.</div></div>
-      </div>
-
-      <div class="admin-card" id="atelierPwChangeCard" style="max-width:420px;margin-bottom:20px;">
-        <h2>Changer le mot de passe Atelier</h2>
-        <p class="sub">Indépendant du mot de passe Admin — initialisé sur la même valeur au premier accès, mais modifiable séparément ici.</p>
-        <div class="modal-error" id="atelierPwChangeError"></div>
-        <div class="modal-success" id="atelierPwChangeSuccess"></div>
-        <label for="atelierPwOld">Mot de passe actuel</label>
-        <input type="password" id="atelierPwOld" placeholder="••••••••">
-        <label for="atelierPwNew">Nouveau mot de passe</label>
-        <input type="password" id="atelierPwNew" placeholder="Au moins 6 caractères">
-        <label for="atelierPwNew2">Confirmer le nouveau mot de passe</label>
-        <input type="password" id="atelierPwNew2" placeholder="••••••••">
-        <button class="btn btn-primary" id="atelierPwChangeBtn" style="width:auto;padding:11px 22px;">Changer le mot de passe</button>
       </div>
 
       <button class="btn-ghost" id="atelierLogoutBtn">Se déconnecter</button>
@@ -6256,8 +6256,8 @@ const TABS = [
   { btn: tabMontures, view: viewMontures, title: 'Hauteur Cote B', subtitle: 'Recherchez une monture, la hauteur se calcule automatiquement' },
   { btn: tabSav, view: viewSav, title: 'SAV Lunettes', subtitle: 'Formulaire de demande au service après-vente C·Evidentia' },
   { btn: tabRa, view: viewRa, title: 'Procédure RA', subtitle: 'RA et double équipement VL/VP par mutuelle' },
-  { btn: tabAdmin, view: viewAdmin, title: 'Admin', subtitle: 'Mise à jour des bases montures et préconisations (accès protégé)', onActivate: resetAdminToLogin },
   { btn: tabAtelier, view: viewAtelier, title: 'Dépôt Fiche Atelier / SAV', subtitle: 'Dépôt, tri et fusion des fiches atelier (accès protégé)', onActivate: resetAtelierToLogin },
+  { btn: tabAdmin, view: viewAdmin, title: 'Admin', subtitle: 'Mise à jour des bases montures et préconisations (accès protégé)', onActivate: resetAdminToLogin },
 ];
 
 function activateTab(target){
