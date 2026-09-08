@@ -237,6 +237,27 @@
   .btn-ghost-link:disabled{background:#F0F2F5;color:var(--ink-soft);cursor:not-allowed;}
   .admin-link:hover{color:var(--teal);}
 
+  /* Mémos SAV (post-it) */
+  .memo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px;}
+  .memo-card{border-radius:12px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,32,46,.10);min-height:110px;}
+  .memo-card .memo-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;color:#26313f;}
+  .memo-card .memo-text{font-size:13px;color:#33404d;line-height:1.55;white-space:pre-wrap;}
+  .memo-card img{max-width:100%;border-radius:6px;display:block;}
+  .memo-empty{color:var(--ink-soft);font-size:13px;}
+
+  .memo-admin-row{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px;background:var(--panel);}
+  .memo-admin-row .memo-row-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+  .memo-admin-row input[type=text]{flex:1;min-width:180px;}
+  .memo-swatches{display:flex;gap:6px;}
+  .memo-swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;}
+  .memo-swatch.active{border-color:var(--ink);}
+  .memo-type-toggle{display:flex;gap:6px;}
+  .memo-type-toggle button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;cursor:pointer;color:var(--ink-soft);}
+  .memo-type-toggle button.active{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep);}
+  .memo-admin-row textarea{width:100%;min-height:70px;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;resize:vertical;}
+  .memo-admin-row .memo-img-preview{max-width:140px;border-radius:8px;display:block;margin-top:8px;}
+  .memo-remove-btn{color:var(--error);font-size:12.5px;cursor:pointer;background:none;border:none;padding:6px 10px;white-space:nowrap;}
+
   /* Procédure RA */
   .ra-card{
     border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
@@ -916,6 +937,12 @@
       <a class="btn-ghost-link" href="https://cevidentia.com/service-apres-vente-lunettes" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:14px;">Ouvrir dans un nouvel onglet ↗</a>
     </div>
 
+    <div class="sav-card" style="max-width:none;margin-top:20px;">
+      <h2>Mémos & rappels</h2>
+      <p class="sub">Notes utiles laissées par l'équipe — gérées depuis l'onglet Admin.</p>
+      <div class="memo-grid" id="savMemosPublic"></div>
+    </div>
+
   </div><!-- /viewSav -->
 
   <div id="viewRa" style="display:none;">
@@ -1055,6 +1082,26 @@
 
           <div class="ra-mgmt-list" id="raMgmtList"></div>
         </div>
+      </div>
+
+      <div class="admin-card" id="coteBFormulasCard" style="margin-top:24px;">
+        <h2>Règles de calcul — Hauteur Cote B</h2>
+        <p class="sub">Chaque hauteur est calculée à partir de la Côte B (B) selon : valeur = B × multiplicateur + décalage. Modifiez les deux nombres pour ajuster une règle ; le résultat s'arrondit toujours au 0,5 supérieur, comme aujourd'hui.</p>
+        <div class="modal-error" id="coteBFormulasError"></div>
+        <div class="modal-success" id="coteBFormulasSuccess"></div>
+        <div id="coteBFormulasList"></div>
+        <button class="btn btn-primary" id="coteBFormulasSaveBtn" style="width:auto;padding:11px 22px;margin-top:14px;">Enregistrer les règles</button>
+        <button class="btn btn-ghost" id="coteBFormulasResetBtn" style="width:auto;padding:11px 18px;margin-top:14px;margin-left:10px;">Réinitialiser aux valeurs par défaut</button>
+      </div>
+
+      <div class="admin-card" id="savMemosCard" style="margin-top:24px;">
+        <h2>Mémos SAV (post-it)</h2>
+        <p class="sub">Notes visibles par tous les opticiens sur l'onglet SAV. Choisissez une couleur, écrivez un texte ou ajoutez une image.</p>
+        <div class="modal-error" id="savMemosError"></div>
+        <div class="modal-success" id="savMemosSuccess"></div>
+        <div id="savMemosAdminList"></div>
+        <button class="btn btn-ghost" id="savMemoAddBtn" style="width:auto;padding:10px 18px;margin-top:10px;">+ Ajouter un mémo</button>
+        <button class="btn btn-primary" id="savMemosSaveBtn" style="width:auto;padding:11px 22px;margin-top:14px;margin-left:10px;">Enregistrer les mémos</button>
       </div>
 
       <div class="admin-card" id="pwChangeCard" style="max-width:420px;margin-top:24px;">
@@ -1222,12 +1269,23 @@
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 /* ============ FORMULES ============ */
-const LENS_TYPES = [
-  { key:'spherique', name:'Sphérique', formula:'(B / 2) + 2', calc:(b)=> b/2 + 2 },
-  { key:'asspherique', name:'Asphérique', formula:'(B × 0,6) − 4', calc:(b)=> b*0.6 - 4 },
-  { key:'proximite', name:'Proximité', formula:'(B × 0,6) − 4', calc:(b)=> b*0.6 - 4 },
-  { key:'prog', name:'Prog. (+intérieur)', formula:'B × 0,6', calc:(b)=> b*0.6 },
+const LENS_TYPES_DEFAULT = [
+  { key:'spherique', name:'Sphérique', multiplier:0.5, offset:2 },
+  { key:'asspherique', name:'Asphérique', multiplier:0.6, offset:-4 },
+  { key:'proximite', name:'Proximité', multiplier:0.6, offset:-4 },
+  { key:'prog', name:'Prog. (+intérieur)', multiplier:0.6, offset:0 },
 ];
+let LENS_TYPES = LENS_TYPES_DEFAULT.map(t => ({ ...t }));
+
+function lensCalc(t, b){ return b * t.multiplier + t.offset; }
+
+function lensFormulaLabel(t){
+  const multStr = (t.multiplier === 0.5) ? 'B / 2' : `B × ${String(t.multiplier).replace('.',',')}`;
+  let offStr = '';
+  if(t.offset > 0) offStr = ` + ${String(t.offset).replace('.',',')}`;
+  else if(t.offset < 0) offStr = ` − ${String(Math.abs(t.offset)).replace('.',',')}`;
+  return `(${multStr})${offStr}`;
+}
 
 /* ============ DATA ============ */
 // DEFAULT_DATA: array of [Marque, Modele, SKU, Couleur, Taille, CoteB]
@@ -4534,10 +4592,10 @@ function displayFrameResult(row){
 
   const grid = document.getElementById('typeGrid');
   grid.innerHTML = LENS_TYPES.map(t => {
-    const val = roundUpHalf(t.calc(coteb));
+    const val = roundUpHalf(lensCalc(t, coteb));
     return `<div class="type-card">
       <div class="type-name">${t.name}</div>
-      <div class="type-formula">${t.formula}</div>
+      <div class="type-formula">${lensFormulaLabel(t)}</div>
       <div class="type-value">${formatNum(val)}<span>mm</span></div>
     </div>`;
   }).join('');
@@ -5279,6 +5337,191 @@ async function atelierGenerateAndPrintBarcode(){
 }
 barcodeGenBtn.addEventListener('click', atelierGenerateAndPrintBarcode);
 barcodeRefInput.addEventListener('keydown', (e) => { if(e.key==='Enter') atelierGenerateAndPrintBarcode(); });
+
+/* ============ CÔTE B — RÈGLES DE CALCUL (éditables) ============ */
+function loadLensFormulas(){
+  AppStorage.get('lens-formulas')
+    .then(res => {
+      const arr = JSON.parse(res.value);
+      if(Array.isArray(arr) && arr.length){
+        arr.forEach(saved => {
+          const t = LENS_TYPES.find(x => x.key === saved.key);
+          if(t){ t.multiplier = saved.multiplier; t.offset = saved.offset; }
+        });
+      }
+    })
+    .catch(() => {})
+    .finally(() => renderCoteBFormulasAdmin());
+}
+
+function renderCoteBFormulasAdmin(){
+  const el = document.getElementById('coteBFormulasList');
+  if(!el) return;
+  el.innerHTML = LENS_TYPES.map((t, i) => `
+    <div class="memo-admin-row">
+      <div class="memo-row-top">
+        <b style="min-width:160px;">${t.name}</b>
+        <label style="font-size:12.5px;color:var(--ink-soft);">Multiplicateur
+          <input type="number" step="0.01" value="${t.multiplier}" style="width:90px;margin-left:6px;" data-idx="${i}" data-field="multiplier" class="coteb-formula-input">
+        </label>
+        <label style="font-size:12.5px;color:var(--ink-soft);">Décalage (mm)
+          <input type="number" step="0.1" value="${t.offset}" style="width:90px;margin-left:6px;" data-idx="${i}" data-field="offset" class="coteb-formula-input">
+        </label>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);" id="coteBPreview${i}">${lensFormulaLabel(t)}</span>
+      </div>
+    </div>
+  `).join('');
+
+  el.querySelectorAll('.coteb-formula-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.idx);
+      const field = input.dataset.field;
+      const val = parseFloat(input.value);
+      if(!isNaN(val)){
+        LENS_TYPES[idx][field] = val;
+        document.getElementById('coteBPreview'+idx).textContent = lensFormulaLabel(LENS_TYPES[idx]);
+      }
+    });
+  });
+}
+
+document.getElementById('coteBFormulasSaveBtn').addEventListener('click', async () => {
+  const errEl = document.getElementById('coteBFormulasError');
+  const okEl = document.getElementById('coteBFormulasSuccess');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+  try{
+    const payload = LENS_TYPES.map(t => ({ key:t.key, multiplier:t.multiplier, offset:t.offset }));
+    await AppStorage.set('lens-formulas', JSON.stringify(payload));
+    okEl.textContent = 'Règles de calcul enregistrées.';
+    okEl.classList.add('show');
+  } catch(e){
+    errEl.textContent = e.message || "Impossible d'enregistrer.";
+    errEl.classList.add('show');
+  }
+});
+
+document.getElementById('coteBFormulasResetBtn').addEventListener('click', () => {
+  LENS_TYPES = LENS_TYPES_DEFAULT.map(t => ({ ...t }));
+  renderCoteBFormulasAdmin();
+});
+
+/* ============ MÉMOS SAV (post-it) ============ */
+const MEMO_COLORS = ['#FADCE0','#FFF3C0','#D8F0E0','#DCEAFB','#FFE3CC','#E7DFF7'];
+let SAV_MEMOS = [];
+
+function loadSavMemos(){
+  AppStorage.get('sav-memos')
+    .then(res => {
+      const arr = JSON.parse(res.value);
+      if(Array.isArray(arr)) SAV_MEMOS = arr;
+    })
+    .catch(() => {})
+    .finally(() => { renderSavMemosPublic(); renderSavMemosAdmin(); });
+}
+
+function renderSavMemosPublic(){
+  const el = document.getElementById('savMemosPublic');
+  if(!el) return;
+  if(SAV_MEMOS.length === 0){
+    el.innerHTML = '<div class="memo-empty">Aucun mémo pour le moment.</div>';
+    return;
+  }
+  el.innerHTML = SAV_MEMOS.map(m => `
+    <div class="memo-card" style="background:${m.color || '#FFF3C0'};">
+      ${m.title ? `<div class="memo-title">${escapeHtml(m.title)}</div>` : ''}
+      ${m.type === 'image' && m.image ? `<img src="${m.image}" alt="">` : ''}
+      ${m.type !== 'image' && m.text ? `<div class="memo-text">${escapeHtml(m.text)}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderSavMemosAdmin(){
+  const el = document.getElementById('savMemosAdminList');
+  if(!el) return;
+  if(SAV_MEMOS.length === 0){
+    el.innerHTML = '<div class="memo-empty">Aucun mémo. Cliquez sur "+ Ajouter un mémo" pour commencer.</div>';
+    return;
+  }
+  el.innerHTML = SAV_MEMOS.map((m, i) => `
+    <div class="memo-admin-row">
+      <div class="memo-row-top">
+        <input type="text" placeholder="Titre (optionnel)" value="${escapeHtml(m.title||'')}" data-idx="${i}" class="memo-title-input">
+        <div class="memo-swatches">
+          ${MEMO_COLORS.map(c => `<button type="button" class="memo-swatch ${m.color===c?'active':''}" style="background:${c};" data-idx="${i}" data-color="${c}"></button>`).join('')}
+        </div>
+        <div class="memo-type-toggle">
+          <button type="button" class="${m.type!=='image'?'active':''}" data-idx="${i}" data-type="text">Texte</button>
+          <button type="button" class="${m.type==='image'?'active':''}" data-idx="${i}" data-type="image">Image</button>
+        </div>
+        <button type="button" class="memo-remove-btn" data-idx="${i}">Supprimer</button>
+      </div>
+      ${m.type === 'image' ? `
+        <input type="file" accept="image/*" data-idx="${i}" class="memo-image-input">
+        ${m.image ? `<img src="${m.image}" class="memo-img-preview">` : ''}
+      ` : `
+        <textarea placeholder="Texte du mémo" data-idx="${i}" class="memo-text-input">${escapeHtml(m.text||'')}</textarea>
+      `}
+    </div>
+  `).join('');
+
+  el.querySelectorAll('.memo-title-input').forEach(input => {
+    input.addEventListener('input', () => { SAV_MEMOS[parseInt(input.dataset.idx)].title = input.value; });
+  });
+  el.querySelectorAll('.memo-text-input').forEach(input => {
+    input.addEventListener('input', () => { SAV_MEMOS[parseInt(input.dataset.idx)].text = input.value; });
+  });
+  el.querySelectorAll('.memo-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SAV_MEMOS[parseInt(btn.dataset.idx)].color = btn.dataset.color;
+      renderSavMemosAdmin();
+    });
+  });
+  el.querySelectorAll('.memo-type-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SAV_MEMOS[parseInt(btn.dataset.idx)].type = btn.dataset.type;
+      renderSavMemosAdmin();
+    });
+  });
+  el.querySelectorAll('.memo-remove-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SAV_MEMOS.splice(parseInt(btn.dataset.idx), 1);
+      renderSavMemosAdmin();
+    });
+  });
+  el.querySelectorAll('.memo-image-input').forEach(input => {
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if(!file) return;
+      const idx = parseInt(input.dataset.idx);
+      const reader = new FileReader();
+      reader.onload = () => {
+        SAV_MEMOS[idx].image = reader.result;
+        renderSavMemosAdmin();
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+
+document.getElementById('savMemoAddBtn').addEventListener('click', () => {
+  SAV_MEMOS.push({ id: crypto.randomUUID(), color: MEMO_COLORS[0], title:'', type:'text', text:'', image:'' });
+  renderSavMemosAdmin();
+});
+
+document.getElementById('savMemosSaveBtn').addEventListener('click', async () => {
+  const errEl = document.getElementById('savMemosError');
+  const okEl = document.getElementById('savMemosSuccess');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+  try{
+    await AppStorage.set('sav-memos', JSON.stringify(SAV_MEMOS));
+    okEl.textContent = 'Mémos enregistrés.';
+    okEl.classList.add('show');
+    renderSavMemosPublic();
+  } catch(e){
+    errEl.textContent = e.message || "Impossible d'enregistrer.";
+    errEl.classList.add('show');
+  }
+});
 
 /* CSV upload */
 const dropzone = document.getElementById('dropzone');
@@ -7264,6 +7507,8 @@ pdCardDetectBtn.addEventListener('click', pdRunCardDetection);
 /* ============ INIT ============ */
 loadData();
 loadPrecosData();
+loadLensFormulas();
+loadSavMemos();
 </script>
 </body>
 </html>
