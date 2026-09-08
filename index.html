@@ -1089,16 +1089,6 @@
     <div id="atelierMainView" style="display:none;">
 
       <div class="admin-card" style="margin-bottom:20px;">
-        <h2>Vérifier une fiche précise</h2>
-        <p class="sub">Recherche un numéro de job pour confirmer qu'il a bien été reçu, y compris un jour précédent déjà fusionné.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input type="text" id="atelierSearchInput" placeholder="Ex. J101055210 ou 101055210" style="flex:1;min-width:220px;">
-          <button class="btn btn-ghost" id="atelierSearchBtn" style="width:auto;margin-top:0;padding:11px 18px;">Rechercher</button>
-        </div>
-        <div id="atelierSearchResult" style="margin-top:10px;"></div>
-      </div>
-
-      <div class="admin-card" style="margin-bottom:20px;">
         <h2>1. Déposer des fiches</h2>
         <p class="sub">Chaque personne peut déposer à son propre moment dans la journée. Précise le jour concerné si tu déposes en retard ou en avance — les dépôts de jours différents ne se mélangent jamais entre eux.</p>
 
@@ -1124,6 +1114,16 @@
         <div id="atelierFileList"></div>
 
         <button class="btn btn-primary" id="atelierAddDepositBtn" style="width:auto;padding:11px 22px;margin-top:14px;" disabled>Ajouter au dépôt de ce jour</button>
+      </div>
+
+      <div class="admin-card" style="margin-bottom:20px;">
+        <h2>Vérifier une fiche précise</h2>
+        <p class="sub">Recherche un numéro de job pour confirmer qu'il a bien été reçu, y compris un jour précédent déjà fusionné.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="atelierSearchInput" placeholder="Ex. J101055210 ou 101055210" style="flex:1;min-width:220px;">
+          <button class="btn btn-ghost" id="atelierSearchBtn" style="width:auto;margin-top:0;padding:11px 18px;">Rechercher</button>
+        </div>
+        <div id="atelierSearchResult" style="margin-top:10px;"></div>
       </div>
 
       <div class="admin-card" id="atelierPoolCard" style="margin-bottom:20px;display:none;">
@@ -4905,7 +4905,8 @@ async function atelierRenderPool(){
 /* ---- Extraction, tri, fusion ---- */
 const ATELIER_RE_JOB_FOOTER = /Job\s*n[°o]\s*:\s*J\s*(\d{6,12})/i;
 const ATELIER_RE_JOB_ANY    = /\bJ\s*(\d{6,12})\b/;
-const ATELIER_RE_COLISSIMO  = /colissimo/i;
+const ATELIER_RE_EXCLUDE    = /colissimo|chronopost/i;
+const ATELIER_RE_FORMULAIRE = /FORMULAIRE/i;
 
 function atelierSimpleHash(str){
   let h = 0;
@@ -4924,13 +4925,23 @@ async function atelierExtractPageRecord(pdfDoc, pageIndex, srcName, origCounter)
   const page = await pdfDoc.getPage(pageIndex+1);
   const textContent = await page.getTextContent();
   const fullText = textContent.items.map(it => it.str).join(' ');
-  const record = { src: srcName, pageIndex, orig: origCounter, text: fullText, isColissimo: ATELIER_RE_COLISSIMO.test(fullText), job: null };
+  const record = { src: srcName, pageIndex, orig: origCounter, text: fullText, isColissimo: ATELIER_RE_EXCLUDE.test(fullText), job: null };
   if(record.isColissimo) return record;
+
+  // Les pages "FORMULAIRE" (bon de retour SAV) vont toujours en tête, même si un numéro
+  // ressemblant à un job (JXXXXXX) apparaît ailleurs sur la page par coïncidence — le titre
+  // du document prime sur toute détection de numéro.
+  if(ATELIER_RE_FORMULAIRE.test(fullText)){
+    record.job = {type:'none', value:null, label:'Sans numéro'};
+    return record;
+  }
+
   const m = ATELIER_RE_JOB_FOOTER.exec(fullText) || ATELIER_RE_JOB_ANY.exec(fullText);
   if(m){ record.job = {type:'numeric', value:Number(m[1]), label:'J'+m[1]}; return record; }
   record.job = {type:'none', value:null, label:'Sans numéro'};
   return record;
 }
+
 
 async function atelierRunPipeline(day){
   const progressWrap = document.getElementById('atelierProgressWrap');
@@ -5089,7 +5100,7 @@ function atelierRenderResults(data){
   });
   data.colissimoExcluded.forEach(r => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>—</td><td>—</td><td>${r.src}</td><td>p${r.pageIndex+1}</td><td><span class="badge badge-danger">Étiquette Colissimo exclue</span></td>`;
+    tr.innerHTML = `<td>—</td><td>—</td><td>${r.src}</td><td>p${r.pageIndex+1}</td><td><span class="badge badge-danger">Étiquette transporteur exclue</span></td>`;
     body.appendChild(tr);
   });
 
@@ -5125,7 +5136,7 @@ function atelierRenderArchiveEntry(log){
     <div><b>Dépôts :</b> ${log.deposits.length}</div>
     ${depositRows}
     <div style="margin-top:6px;"><b>Pages reçues :</b> ${log.totalInPages} — <b>Pages fusionnées :</b> ${log.finalOrderCount}</div>
-    <div><b>Sans numéro (dont SAV) :</b> ${log.frontCount} — <b>Doublons :</b> ${log.duplicatesCount} — <b>Colissimo exclues :</b> ${log.colissimoCount}</div>
+    <div><b>Sans numéro (dont SAV) :</b> ${log.frontCount} — <b>Doublons :</b> ${log.duplicatesCount} — <b>Étiquettes transporteur exclues :</b> ${log.colissimoCount}</div>
     <div style="margin-top:6px;"><b>Jobs numériques :</b></div>
     <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;word-break:break-all;">${jobsPreview}</div>
   `;
