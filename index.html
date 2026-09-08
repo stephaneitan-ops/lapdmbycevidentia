@@ -362,6 +362,22 @@
   #viewAtelier .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal-deep),var(--teal));transition:width .2s;}
   #viewAtelier .atelier-log-line{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
 
+  /* Sous-onglets de l'onglet Atelier (Dépôt / CodeBarre) */
+  .sub-tab-btn{background:none;border:none;padding:10px 4px;margin-right:22px;font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .sub-tab-btn:hover{color:var(--ink);}
+  .sub-tab-btn.active{color:var(--teal-deep);border-bottom-color:var(--teal-deep);}
+
+  /* Zone imprimable du générateur de code-barres : invisible à l'écran, seule visible à l'impression */
+  #barcodePrintArea{display:none;}
+  .barcode-label-sheet{text-align:center;padding:60px 20px;}
+  .barcode-label-ref{font-size:22px;font-weight:700;letter-spacing:1px;margin-bottom:18px;font-family:'IBM Plex Mono',monospace;}
+
+  @media print{
+    body > *:not(#barcodePrintArea){ display:none !important; }
+    #barcodePrintArea{ display:block !important; }
+    @page{ margin:14mm; }
+  }
+
   .dropzone{
     border:2px dashed var(--line);border-radius:10px;padding:22px;text-align:center;
     font-size:13px;color:var(--ink-soft);margin-bottom:14px;cursor:pointer;transition:border-color .15s;
@@ -1088,6 +1104,13 @@
 
     <div id="atelierMainView" style="display:none;">
 
+      <div class="sub-tabs" style="display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--line);">
+        <button class="sub-tab-btn active" id="atelierSubTabDeposit" type="button">Dépôt Atelier / SAV</button>
+        <button class="sub-tab-btn" id="atelierSubTabBarcode" type="button">CodeBarre</button>
+      </div>
+
+      <div id="atelierSubDeposit">
+
       <div class="admin-card" style="margin-bottom:20px;">
         <h2>1. Déposer des fiches</h2>
         <p class="sub">Chaque personne peut déposer à son propre moment dans la journée. Précise le jour concerné si tu déposes en retard ou en avance — les dépôts de jours différents ne se mélangent jamais entre eux.</p>
@@ -1165,10 +1188,30 @@
         <div id="atelierArchiveLog"><div class="sub" id="atelierArchiveEmpty">Aucun jour fusionné pour le moment.</div></div>
       </div>
 
+      </div><!-- /atelierSubDeposit -->
+
+      <div id="atelierSubBarcode" style="display:none;">
+        <div class="admin-card" style="max-width:480px;margin-bottom:20px;">
+          <h2>Générateur de code-barres</h2>
+          <p class="sub">Tape une référence, clique sur Générer : une feuille prête à imprimer s'ouvre directement, avec la référence et son code-barres Code 128. Rien n'est enregistré — usage à la volée.</p>
+          <label for="barcodeRefInput">Référence</label>
+          <input type="text" id="barcodeRefInput" placeholder="Ex. 00164952">
+          <div class="modal-error" id="barcodeErr"></div>
+          <button class="btn btn-primary" id="barcodeGenBtn" style="width:auto;padding:11px 22px;margin-top:14px;">Générer et imprimer</button>
+        </div>
+      </div>
+
       <button class="btn-ghost" id="atelierLogoutBtn">Se déconnecter</button>
     </div>
 
   </div><!-- /viewAtelier -->
+
+  <div id="barcodePrintArea">
+    <div class="barcode-label-sheet">
+      <div class="barcode-label-ref" id="barcodePrintRef"></div>
+      <svg id="barcodeSvg"></svg>
+    </div>
+  </div>
 
   </div><!-- /wrap -->
 
@@ -4645,6 +4688,7 @@ function resetAtelierToLogin(){
   atelierPassword.value = '';
   atelierLoginError.classList.remove('show');
   CURRENT_ATELIER_PASSWORD = null;
+  if(typeof atelierShowSubTab === 'function') atelierShowSubTab('deposit');
 }
 
 async function verifyAtelierPassword(pw){
@@ -5173,6 +5217,67 @@ async function atelierSearchJob(){
     resultEl.innerHTML = `<div class="modal-error show">${err.message || "Impossible de contacter l'API."}</div>`;
   }
 }
+
+/* ---- Sous-onglets Atelier : Dépôt / CodeBarre ---- */
+const atelierSubTabDeposit = document.getElementById('atelierSubTabDeposit');
+const atelierSubTabBarcode = document.getElementById('atelierSubTabBarcode');
+const atelierSubDeposit = document.getElementById('atelierSubDeposit');
+const atelierSubBarcode = document.getElementById('atelierSubBarcode');
+
+function atelierShowSubTab(which){
+  const isDeposit = which === 'deposit';
+  atelierSubDeposit.style.display = isDeposit ? 'block' : 'none';
+  atelierSubBarcode.style.display = isDeposit ? 'none' : 'block';
+  atelierSubTabDeposit.classList.toggle('active', isDeposit);
+  atelierSubTabBarcode.classList.toggle('active', !isDeposit);
+}
+atelierSubTabDeposit.addEventListener('click', () => atelierShowSubTab('deposit'));
+atelierSubTabBarcode.addEventListener('click', () => atelierShowSubTab('barcode'));
+
+/* ---- Générateur de code-barres (Code 128), 100% côté client, rien n'est conservé ---- */
+let jsBarcodeLibPromise = null;
+function atelierLoadBarcodeLib(){
+  if(jsBarcodeLibPromise) return jsBarcodeLibPromise;
+  jsBarcodeLibPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("La librairie de code-barres n'a pas pu être chargée."));
+    document.head.appendChild(s);
+  });
+  return jsBarcodeLibPromise;
+}
+
+const barcodeRefInput = document.getElementById('barcodeRefInput');
+const barcodeGenBtn = document.getElementById('barcodeGenBtn');
+const barcodeErr = document.getElementById('barcodeErr');
+
+async function atelierGenerateAndPrintBarcode(){
+  const ref = barcodeRefInput.value.trim();
+  barcodeErr.classList.remove('show');
+  if(!ref){
+    barcodeErr.textContent = 'Merci de saisir une référence.';
+    barcodeErr.classList.add('show');
+    return;
+  }
+
+  barcodeGenBtn.disabled = true;
+  barcodeGenBtn.textContent = 'Génération…';
+  try{
+    await atelierLoadBarcodeLib();
+    document.getElementById('barcodePrintRef').textContent = ref;
+    JsBarcode('#barcodeSvg', ref, { format: 'CODE128', width: 2.4, height: 90, displayValue: false, margin: 0 });
+    window.print();
+  } catch(e){
+    barcodeErr.textContent = e.message || 'Référence invalide pour un code-barres Code 128.';
+    barcodeErr.classList.add('show');
+  } finally {
+    barcodeGenBtn.disabled = false;
+    barcodeGenBtn.textContent = 'Générer et imprimer';
+  }
+}
+barcodeGenBtn.addEventListener('click', atelierGenerateAndPrintBarcode);
+barcodeRefInput.addEventListener('keydown', (e) => { if(e.key==='Enter') atelierGenerateAndPrintBarcode(); });
 
 /* CSV upload */
 const dropzone = document.getElementById('dropzone');
