@@ -976,6 +976,9 @@
         <button class="admin-subtab-btn" data-subtab="mutuelles" type="button">Gestion mutuelles</button>
         <button class="admin-subtab-btn" data-subtab="verres" type="button">Gestion verres</button>
         <button class="admin-subtab-btn" data-subtab="ra" type="button">Gestion RA</button>
+        <button class="admin-subtab-btn" data-subtab="formulas" type="button">Règles de calcul</button>
+        <button class="admin-subtab-btn" data-subtab="memos" type="button">Mémos SAV</button>
+        <button class="admin-subtab-btn" data-subtab="passwords" type="button">Mots de passe</button>
       </div>
 
       <div class="admin-subview" id="adminSubview-catalogues">
@@ -1084,7 +1087,8 @@
         </div>
       </div>
 
-      <div class="admin-card" id="coteBFormulasCard" style="margin-top:24px;">
+      <div class="admin-subview" id="adminSubview-formulas" style="display:none;">
+      <div class="admin-card" id="coteBFormulasCard">
         <h2>Règles de calcul — Hauteur Cote B</h2>
         <p class="sub">Chaque hauteur est calculée à partir de la Côte B (B) selon : valeur = B × multiplicateur + décalage. Modifiez les deux nombres pour ajuster une règle ; le résultat s'arrondit toujours au 0,5 supérieur, comme aujourd'hui.</p>
         <div class="modal-error" id="coteBFormulasError"></div>
@@ -1093,8 +1097,10 @@
         <button class="btn btn-primary" id="coteBFormulasSaveBtn" style="width:auto;padding:11px 22px;margin-top:14px;">Enregistrer les règles</button>
         <button class="btn btn-ghost" id="coteBFormulasResetBtn" style="width:auto;padding:11px 18px;margin-top:14px;margin-left:10px;">Réinitialiser aux valeurs par défaut</button>
       </div>
+      </div>
 
-      <div class="admin-card" id="savMemosCard" style="margin-top:24px;">
+      <div class="admin-subview" id="adminSubview-memos" style="display:none;">
+      <div class="admin-card" id="savMemosCard">
         <h2>Mémos SAV (post-it)</h2>
         <p class="sub">Notes visibles par tous les opticiens sur l'onglet SAV. Choisissez une couleur, écrivez un texte ou ajoutez une image.</p>
         <div class="modal-error" id="savMemosError"></div>
@@ -1103,8 +1109,10 @@
         <button class="btn btn-ghost" id="savMemoAddBtn" style="width:auto;padding:10px 18px;margin-top:10px;">+ Ajouter un mémo</button>
         <button class="btn btn-primary" id="savMemosSaveBtn" style="width:auto;padding:11px 22px;margin-top:14px;margin-left:10px;">Enregistrer les mémos</button>
       </div>
+      </div>
 
-      <div class="admin-card" id="pwChangeCard" style="max-width:420px;margin-top:24px;">
+      <div class="admin-subview" id="adminSubview-passwords" style="display:none;">
+      <div class="admin-card" id="pwChangeCard" style="max-width:420px;">
         <h2>Changer le mot de passe Admin</h2>
         <div id="pwChangeUnavailable" class="modal-error" style="display:none;">
           Cette fonctionnalité nécessite que le site soit déployé sur Netlify avec les fonctions serveur actives (elle est désactivée dans cette prévisualisation).
@@ -1132,6 +1140,7 @@
         <label for="atelierPwNew2">Confirmer le nouveau mot de passe</label>
         <input type="password" id="atelierPwNew2" placeholder="••••••••">
         <button class="btn btn-primary" id="atelierPwChangeBtn" style="width:auto;padding:11px 22px;">Changer le mot de passe</button>
+      </div>
       </div>
 
       <button class="btn-ghost" id="logoutBtn" style="margin-top:22px;">Se déconnecter</button>
