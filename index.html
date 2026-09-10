@@ -677,6 +677,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
         <span>Dépôt Atelier / SAV</span>
       </button>
+      <button class="nav-item" id="tabSuivi" type="button" title="Suivi Fournisseur">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 4 5-8"/></svg>
+        <span>Suivi Fournisseur</span>
+      </button>
       <button class="nav-item" id="tabAdmin" type="button" title="Admin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
         <span>Admin</span>
@@ -690,6 +694,41 @@
     <h1 id="pageTitle">Préconisations</h1>
     <p id="pageSubtitle">Sélectionnez la mutuelle du client pour voir les verres à préconiser</p>
   </div>
+
+  <div id="viewSuivi" style="display:none;">
+
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+    <input type="text" id="suiviNewJob" placeholder="Numéro de Job (ex. J101110767)" autocomplete="off"
+           style="flex:1;min-width:220px;border:1.5px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:14px;font-family:'IBM Plex Sans',sans-serif;">
+    <button id="suiviAddJobBtn" type="button" class="btn-ghost-link">+ Ajouter au suivi</button>
+  </div>
+
+  <div id="suiviLockBar" style="display:none;align-items:center;gap:8px;margin-bottom:16px;padding:10px 12px;background:var(--brass-soft);border-radius:var(--radius);font-size:12.5px;color:var(--ink-soft);">
+    <span>Mot de passe Admin requis pour ajouter un Job ou modifier une observation.</span>
+    <input type="password" id="suiviUnlockPw" placeholder="Mot de passe" style="border:1px solid var(--line);border-radius:6px;padding:6px 9px;font-size:12.5px;width:140px;">
+    <button id="suiviUnlockBtn" type="button" class="btn-ghost-link">Déverrouiller</button>
+  </div>
+
+  <div id="suiviLoading" style="font-size:13px;color:var(--ink-soft);">Chargement…</div>
+
+  <div style="overflow-x:auto;">
+  <table id="suiviTable" style="width:100%;border-collapse:collapse;display:none;">
+    <thead>
+      <tr style="text-align:left;border-bottom:1.5px solid var(--line);">
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Job</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Client</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Fournisseur</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Réf. monture</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Statut fournisseur</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Dernière vérif.</th>
+        <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Observation</th>
+      </tr>
+    </thead>
+    <tbody id="suiviBody"></tbody>
+  </table>
+  </div>
+
+  </div><!-- /viewSuivi -->
 
   <div id="viewMontures" style="display:none;">
 
@@ -6609,6 +6648,7 @@ const tabSav = document.getElementById('tabSav');
 const tabRa = document.getElementById('tabRa');
 const tabAdmin = document.getElementById('tabAdmin');
 const tabAtelier = document.getElementById('tabAtelier');
+const tabSuivi = document.getElementById('tabSuivi');
 const viewMontures = document.getElementById('viewMontures');
 const viewPd = document.getElementById('viewPd');
 const viewPrecos = document.getElementById('viewPrecos');
@@ -6616,6 +6656,7 @@ const viewSav = document.getElementById('viewSav');
 const viewRa = document.getElementById('viewRa');
 const viewAdmin = document.getElementById('viewAdmin');
 const viewAtelier = document.getElementById('viewAtelier');
+const viewSuivi = document.getElementById('viewSuivi');
 const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
 
@@ -6626,6 +6667,7 @@ const TABS = [
   { btn: tabSav, view: viewSav, title: 'SAV Lunettes', subtitle: 'Formulaire de demande au service après-vente C·Evidentia' },
   { btn: tabRa, view: viewRa, title: 'Procédure RA', subtitle: 'RA et double équipement VL/VP par mutuelle' },
   { btn: tabAtelier, view: viewAtelier, title: 'Dépôt Fiche Atelier / SAV', subtitle: 'Dépôt, tri et fusion des fiches atelier (accès protégé)', onActivate: resetAtelierToLogin },
+  { btn: tabSuivi, view: viewSuivi, title: 'Suivi Fournisseur', subtitle: "Statut des commandes bloquées, mis à jour automatiquement (French exclu — commandes par mail)", onActivate: loadSuiviFournisseur },
   { btn: tabAdmin, view: viewAdmin, title: 'Admin', subtitle: 'Mise à jour des bases montures et préconisations (accès protégé)', onActivate: resetAdminToLogin },
 ];
 
@@ -6641,6 +6683,120 @@ function activateTab(target){
 }
 
 TABS.forEach(t => t.btn.addEventListener('click', () => activateTab(t)));
+
+
+/* ============ SUIVI FOURNISSEUR ============ */
+const suiviLockBar = document.getElementById('suiviLockBar');
+const suiviUnlockPw = document.getElementById('suiviUnlockPw');
+const suiviUnlockBtn = document.getElementById('suiviUnlockBtn');
+const suiviNewJob = document.getElementById('suiviNewJob');
+const suiviAddJobBtn = document.getElementById('suiviAddJobBtn');
+let SUIVI_DATA = {};
+
+function suiviUpdateLockBar(){
+  suiviLockBar.style.display = CURRENT_ADMIN_PASSWORD ? 'none' : 'flex';
+}
+
+suiviUnlockBtn.addEventListener('click', async () => {
+  const pw = suiviUnlockPw.value;
+  if(!pw) return;
+  try{
+    const { ok } = await verifyAdminPassword(pw);
+    if(!ok){ alert('Mot de passe incorrect.'); return; }
+    CURRENT_ADMIN_PASSWORD = pw;
+    suiviUnlockPw.value = '';
+    suiviUpdateLockBar();
+  } catch(e){
+    alert('Erreur de vérification : ' + e.message);
+  }
+});
+
+async function loadSuiviFournisseur(){
+  suiviUpdateLockBar();
+  const loading = document.getElementById('suiviLoading');
+  const table = document.getElementById('suiviTable');
+  const body = document.getElementById('suiviBody');
+  loading.style.display = 'block';
+  loading.textContent = 'Chargement…';
+  table.style.display = 'none';
+  try{
+    const { value } = await AppStorage.get('suivi_fournisseur');
+    SUIVI_DATA = value ? (typeof value === 'string' ? JSON.parse(value) : value) : {};
+    renderSuiviTable();
+  } catch(e){
+    loading.textContent = 'Erreur de chargement : ' + e.message;
+  }
+}
+
+function renderSuiviTable(){
+  const loading = document.getElementById('suiviLoading');
+  const table = document.getElementById('suiviTable');
+  const body = document.getElementById('suiviBody');
+  const jobs = Object.keys(SUIVI_DATA).sort();
+
+  body.innerHTML = jobs.map(job => {
+    const e = SUIVI_DATA[job] || {};
+    const statut = e.statut_fournisseur || '';
+    const statutStyle = /exp[ée]di[ée]e|livr[ée]e|dispo/i.test(statut) ? 'color:#16A34A;' :
+                         /annul[ée]e|non identifi/i.test(statut) ? 'color:var(--error);' : '';
+    return `<tr style="border-bottom:1px solid #EEF2F8;">
+      <td style="padding:8px 6px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;white-space:nowrap;">${escapeHtml(job)}</td>
+      <td style="padding:8px 6px;">${escapeHtml(e.client || '')}</td>
+      <td style="padding:8px 6px;text-transform:capitalize;">${escapeHtml(e.fournisseur || '')}</td>
+      <td style="padding:8px 6px;">${escapeHtml(e.ref_monture || '')}</td>
+      <td style="padding:8px 6px;${statutStyle}">${escapeHtml(statut || '—')}</td>
+      <td style="padding:8px 6px;font-size:12px;color:var(--ink-soft);white-space:nowrap;">${escapeHtml(e.derniere_verification || '—')}</td>
+      <td style="padding:8px 6px;min-width:180px;">
+        <input type="text" value="${escapeHtml(e.observation || '')}"
+               data-job="${escapeHtml(job)}" class="suivi-obs-input"
+               style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;">
+      </td>
+    </tr>`;
+  }).join('');
+
+  table.style.display = jobs.length ? 'table' : 'none';
+  loading.style.display = jobs.length ? 'none' : 'block';
+  loading.textContent = 'Aucune commande suivie pour le moment.';
+
+  body.querySelectorAll('.suivi-obs-input').forEach(input => {
+    input.addEventListener('change', async () => {
+      if(!CURRENT_ADMIN_PASSWORD){
+        alert("Déverrouille l'édition (mot de passe Admin) avant de modifier une observation.");
+        renderSuiviTable();
+        return;
+      }
+      SUIVI_DATA[input.dataset.job].observation = input.value;
+      try{
+        await AppStorage.set('suivi_fournisseur', JSON.stringify(SUIVI_DATA));
+      } catch(e){
+        alert("Impossible d'enregistrer : " + e.message);
+      }
+    });
+  });
+}
+
+suiviAddJobBtn.addEventListener('click', async () => {
+  const job = suiviNewJob.value.trim().toUpperCase();
+  if(!/^J\d{9}$/.test(job)){
+    alert('Format attendu : J suivi de 9 chiffres (ex. J101110767).');
+    return;
+  }
+  if(!CURRENT_ADMIN_PASSWORD){
+    alert("Déverrouille l'édition (mot de passe Admin) avant d'ajouter un Job.");
+    return;
+  }
+  if(!SUIVI_DATA[job]){
+    SUIVI_DATA[job] = { client:'', fournisseur:'', ref_monture:'', sku:'', statut_fournisseur:'', observation:'' };
+    try{
+      await AppStorage.set('suivi_fournisseur', JSON.stringify(SUIVI_DATA));
+    } catch(e){
+      alert("Impossible d'ajouter ce Job : " + e.message);
+      return;
+    }
+  }
+  suiviNewJob.value = '';
+  renderSuiviTable();
+});
 
 
 /* ============ ÉCART PUPILLAIRE (PD) ============ */
