@@ -722,6 +722,7 @@
         <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Statut fournisseur</th>
         <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Dernière vérif.</th>
         <th style="padding:8px 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Observation</th>
+        <th style="padding:8px 6px;width:1%;"></th>
       </tr>
     </thead>
     <tbody id="suiviBody"></tbody>
@@ -6751,6 +6752,12 @@ function renderSuiviTable(){
                data-job="${escapeHtml(job)}" class="suivi-obs-input"
                style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;">
       </td>
+      <td style="padding:8px 6px;white-space:nowrap;">
+        <button type="button" class="suivi-delete-btn" data-job="${escapeHtml(job)}" title="Supprimer du suivi (dossier clos)"
+                style="border:none;background:none;cursor:pointer;padding:6px;border-radius:6px;color:var(--error);display:inline-flex;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </td>
     </tr>`;
   }).join('');
 
@@ -6773,6 +6780,25 @@ function renderSuiviTable(){
       }
     });
   });
+
+  body.querySelectorAll('.suivi-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteSuiviJob(btn.dataset.job));
+  });
+}
+
+async function deleteSuiviJob(job){
+  if(!CURRENT_ADMIN_PASSWORD){
+    alert("Déverrouille l'édition (mot de passe Admin) avant de supprimer un Job.");
+    return;
+  }
+  if(!confirm(`Supprimer le Job ${job} du suivi ? (dossier clos)`)) return;
+  delete SUIVI_DATA[job];
+  try{
+    await AppStorage.set('suivi_fournisseur', JSON.stringify(SUIVI_DATA));
+    renderSuiviTable();
+  } catch(e){
+    alert("Impossible de supprimer : " + e.message);
+  }
 }
 
 suiviAddJobBtn.addEventListener('click', async () => {
