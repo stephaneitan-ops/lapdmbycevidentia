@@ -41,11 +41,14 @@
     display:flex;flex-direction:column;gap:32px;
     position:sticky;top:0;height:100vh;overflow-y:auto;
   }
-  .sidebar-brand{padding:0 10px;}
+  .sidebar-brand{
+    padding:12px 14px;
+    border:1.5px solid var(--brass);border-radius:12px;background:rgba(255,109,27,.07);
+  }
   .brand-row{display:flex;align-items:center;gap:11px;}
   .brand-icon-frame{
     flex:none;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
-    border:1.5px solid var(--brass);border-radius:9px;background:rgba(255,109,27,.08);
+    border:1.5px solid var(--brass);border-radius:9px;background:rgba(255,109,27,.10);
   }
   .brand-icon{flex:none;width:22px;height:22px;color:#fff;}
   .sidebar-brand .brand-name{
@@ -74,14 +77,14 @@
 
   @media (max-width:860px){
     .sidebar{width:180px;padding:22px 12px;gap:26px;}
-    .sidebar-brand{padding:0 6px;}
+    .sidebar-brand{padding:10px 10px;}
     .sidebar-brand .brand-name{font-size:17px;}
     .nav-item{padding:11px 8px;font-size:13px;gap:9px;}
   }
 
   @media (max-width:560px){
     .sidebar{width:64px;padding:18px 8px;gap:24px;align-items:center;}
-    .sidebar-brand{padding:0;text-align:center;}
+    .sidebar-brand{padding:0;text-align:center;border:none;background:none;}
     .sidebar-brand .brand-name{font-size:11px;line-height:1.2;}
     .sidebar-brand .brand-sub{display:none;}
     .sidebar-brand .brand-version{display:none;}
@@ -335,7 +338,11 @@
   .visibility-reseau{padding:10px 0;border-bottom:1px solid #EEF2F8;}
   .visibility-reseau:last-child{border-bottom:none;}
   .visibility-reseau-title{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:600;color:var(--teal-deep);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
-  .visibility-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:7px 0;font-size:13.5px;color:var(--ink);cursor:pointer;}
+  .visibility-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:7px 0;font-size:13.5px;color:var(--ink);}
+  .visibility-actions{display:flex;align-items:center;gap:10px;}
+  /* La poubelle est volontairement éloignée de l'interrupteur (séparateur + marge)
+     pour éviter tout clic accidentel sur "supprimer" au lieu de "masquer". */
+  .visibility-del{margin-left:18px;padding-left:18px;border-left:1px solid var(--line);}
   .toggle-switch{
     flex:none;width:42px;height:24px;border-radius:999px;background:#DC2626;
     position:relative;cursor:pointer;transition:background .15s ease;
@@ -649,7 +656,7 @@
           <div class="brand-sub">by C·Evidentia</div>
           <!-- Numéro de version : incrémenté à la main à chaque livraison.
                y (mineur) +1 à chaque modif livrée ; x (majeur) +1 (y->0) pour un changement structurel important. -->
-          <div class="brand-version">V2.4</div>
+          <div class="brand-version">V2.5</div>
         </div>
       </div>
     </div>
@@ -799,6 +806,8 @@
     <div class="pd-instructions">
       <b>Comment faire la photo :</b> le client tient une carte bancaire ou Vitale bien à plat sur le front (ou tout près du visage, dans le même plan que les yeux), photo prise de face, sans inclinaison.
       <br><span class="pd-privacy">🔒 La photo reste uniquement dans votre navigateur : elle n'est jamais envoyée ni stockée nulle part.</span>
+      <br><a id="pdPhotoBookmarklet" href="javascript:!function()%7Btry%7Bfetch(location.href).then(function(e)%7Breturn%20e.blob()%7D).then(function(e)%7Bvar%20t%3Dnew%20FileReader%3Bt.onload%3Dfunction()%7Bvar%20e%3Dt.result%2Ca%3Dwindow.open(%22https%3A%2F%2Flapdmbycevidentia.netlify.app%2F%22%2C%22_blank%22)%3Bif(a)%7Bvar%20n%3D!1%3Bwindow.addEventListener(%22message%22%2Co)%3Bvar%20r%3DsetInterval(function()%7Bif(n)clearInterval(r)%3Belse%20try%7Ba.postMessage(%7Btype%3A%22pd-photo%22%2CdataUrl%3Ae%7D%2C%22*%22)%7Dcatch(e)%7B%7D%7D%2C400)%3BsetTimeout(function()%7BclearInterval(r)%2Cwindow.removeEventListener(%22message%22%2Co)%7D%2C15e3)%7Delse%20alert(%22Le%20navigateur%20a%20bloqu%C3%A9%20l'ouverture%20du%20nouvel%20onglet.%20Autorisez%20les%20pop-ups%20pour%20ce%20site.%22)%3Bfunction%20o(e)%7Be.data%26%26%22pd-photo-ack%22%3D%3D%3De.data.type%26%26(n%3D!0%2CclearInterval(r)%2Cwindow.removeEventListener(%22message%22%2Co))%7D%7D%2Ct.readAsDataURL(e)%7D).catch(function(e)%7Balert(%22Impossible%20de%20r%C3%A9cup%C3%A9rer%20la%20photo%20%3A%20%22%2Be.message)%7D)%7Dcatch(e)%7Balert(%22Erreur%20%3A%20%22%2Be.message)%7D%7D()%3B"
+         class="btn-ghost-link" onclick="return false;" title="Glisse-moi dans tes favoris, ne clique pas ici">🔖 Envoyer photo PDM vers le Tool Box</a>
     </div>
 
     <div class="pd-upload" id="pdUploadZone">
@@ -1348,8 +1357,8 @@
         </div>
         <div class="admin-card" style="max-width:480px;margin-bottom:20px;">
           <h2>Génération automatique</h2>
-          <p class="sub">Sur le site des envois, sélectionne la référence puis clique sur ce favori : le Tool Box s'ouvre avec la référence déjà remplie et le code-barre est imprimé automatiquement.</p>
-          <a id="atelierBarcodeBookmarklet" href="javascript:!function()%7B%22use%20strict%22%3Bvar%20e%3D(window.getSelection%3Fwindow.getSelection().toString()%3A%22%22).trim()%3Be%26%26window.open(%22https%3A%2F%2Flapdmbycevidentia.netlify.app%2F%3Fbarcode_ref%3D%22%2BencodeURIComponent(e)%2C%22_blank%22)%7D()%3B"
+          <p class="sub">Sur le site des envois, sélectionne la référence puis clique sur ce favori : le code-barre est rempli et imprimé automatiquement. Si cet onglet Tool Box est déjà ouvert, il est réutilisé — le mot de passe n'est plus redemandé.</p>
+          <a id="atelierBarcodeBookmarklet" href="javascript:!function()%7B%22use%20strict%22%3Bvar%20e%3D(window.getSelection%3Fwindow.getSelection().toString()%3A%22%22).trim()%3Bif(e)%7Bvar%20t%3Dwindow.open(%22%22%2C%22toolbox-cevidentia%22)%3Bif(t)%7Bvar%20n%3D!1%3Bwindow.addEventListener(%22message%22%2Cr)%3Bvar%20a%3DsetInterval(function()%7Bif(n)clearInterval(a)%3Belse%20try%7Bt.postMessage(%7Btype%3A%22barcode-ref%22%2Cref%3Ae%7D%2C%22*%22)%7Dcatch(e)%7B%7D%7D%2C300)%3Btry%7Bt.postMessage(%7Btype%3A%22barcode-ref%22%2Cref%3Ae%7D%2C%22*%22)%7Dcatch(e)%7B%7DsetTimeout(function()%7Bif(clearInterval(a)%2Cwindow.removeEventListener(%22message%22%2Cr)%2C!n)try%7Bt.location%3D%22https%3A%2F%2Flapdmbycevidentia.netlify.app%2F%3Fbarcode_ref%3D%22%2BencodeURIComponent(e)%7Dcatch(e)%7B%7D%7D%2C1200)%7D%7Dfunction%20r(e)%7Be.data%26%26%22barcode-ref-ack%22%3D%3D%3De.data.type%26%26(n%3D!0%2CclearInterval(a)%2Cwindow.removeEventListener(%22message%22%2Cr))%7D%7D()%3B"
              class="btn-ghost-link" onclick="return false;" title="Glisse-moi dans tes favoris, ne clique pas ici">🔖 Générer code-barre</a>
         </div>
       </div>
@@ -4567,6 +4576,15 @@ glossaireToggleBtn.addEventListener('click', () => {
   glossairePanel.style.display = showing ? 'none' : 'block';
 });
 
+function precosResetFilters(){
+  precosActiveType = 'Tous';
+  precosActiveIndice = 'Tous';
+  precosActiveMat = 'Tous';
+  precosTypeFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'Tous'));
+  precosIndiceFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b.dataset.indice === 'Tous'));
+  precosMatFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.remove('active'));
+}
+
 function renderPrecosResults(){
   const reseau = precosReseauSelect.value;
   const mutuelle = precosMutuelleSelect.value;
@@ -4587,9 +4605,19 @@ function renderPrecosResults(){
     precosEmptyState.querySelector('p').textContent = "Aucune préconisation enregistrée pour cette mutuelle pour l'instant.";
     return;
   }
-  precosTypeFilter.style.display = 'flex';
-  precosIndiceFilter.style.display = 'flex';
-  precosMatFilter.style.display = 'flex';
+  // Les forfaits du réseau "Lentilles" n'ont ni type de verre, ni indice, ni teinte :
+  // ces filtres n'ont aucun sens ici. On les masque, et surtout on les réinitialise —
+  // sinon un filtre resté actif (ex. "1.60") viderait la liste après changement de réseau.
+  if(reseau === 'Lentilles'){
+    precosResetFilters();
+    precosTypeFilter.style.display = 'none';
+    precosIndiceFilter.style.display = 'none';
+    precosMatFilter.style.display = 'none';
+  } else {
+    precosTypeFilter.style.display = 'flex';
+    precosIndiceFilter.style.display = 'flex';
+    precosMatFilter.style.display = 'flex';
+  }
 
   let rows = precosActiveType === 'Tous'
     ? allRows
@@ -4915,6 +4943,10 @@ const ATELIER_API = '/.netlify/functions/atelier';
 const ATELIER_PASSWORD_FALLBACK = 'Atelier2026'; // repli local, utilisé uniquement quand l'API serveur n'est pas déployée (tests dans Claude)
 let CURRENT_ATELIER_PASSWORD = null;
 let pendingBarcodeRef = null; // rempli via le lien ?barcode_ref=... (bookmarklet "Générer code-barre")
+const ATELIER_PW_SESSION_KEY = 'toolbox_atelier_pw';
+// Nom de fenêtre : permet au bookmarklet code-barre de retrouver CET onglet s'il est déjà
+// ouvert, et donc de réutiliser la session atelier au lieu de redemander le mot de passe.
+window.name = 'toolbox-cevidentia';
 
 const atelierLoginView = document.getElementById('atelierLoginView');
 const atelierMainView = document.getElementById('atelierMainView');
@@ -4923,13 +4955,45 @@ const atelierLoginBtn = document.getElementById('atelierLoginBtn');
 const atelierLoginError = document.getElementById('atelierLoginError');
 const atelierLogoutBtn = document.getElementById('atelierLogoutBtn');
 
-function resetAtelierToLogin(){
+function atelierShowLoginForm(){
   atelierLoginView.style.display = 'block';
   atelierMainView.style.display = 'none';
   atelierPassword.value = '';
   atelierLoginError.classList.remove('show');
   CURRENT_ATELIER_PASSWORD = null;
   if(typeof atelierShowSubTab === 'function') atelierShowSubTab('deposit');
+}
+
+// Déconnexion explicite : c'est le seul endroit qui efface la session mémorisée.
+function atelierLogout(){
+  try{ sessionStorage.removeItem(ATELIER_PW_SESSION_KEY); }catch(e){}
+  atelierShowLoginForm();
+}
+
+// Appelé à chaque activation de l'onglet. Si le mot de passe a déjà été saisi dans cet
+// onglet de navigateur, on rouvre directement la session au lieu de le redemander.
+function resetAtelierToLogin(){
+  let saved = null;
+  try{ saved = sessionStorage.getItem(ATELIER_PW_SESSION_KEY); }catch(e){}
+  if(saved){
+    CURRENT_ATELIER_PASSWORD = saved;
+    atelierLoginView.style.display = 'none';
+    atelierMainView.style.display = 'block';
+    atelierRenderPool();
+    atelierRunPendingBarcode();
+    return;
+  }
+  atelierShowLoginForm();
+}
+
+// Exécute la demande de code-barre reçue du bookmarklet, une fois la session ouverte.
+function atelierRunPendingBarcode(){
+  if(!pendingBarcodeRef) return;
+  const ref = pendingBarcodeRef;
+  pendingBarcodeRef = null;
+  atelierShowSubTab('barcode');
+  barcodeRefInput.value = ref;
+  atelierGenerateAndPrintBarcode();
 }
 
 async function verifyAtelierPassword(pw){
@@ -4957,22 +5021,20 @@ atelierLoginBtn.addEventListener('click', async () => {
   atelierLoginBtn.textContent = 'Se connecter';
   if(result.ok){
     CURRENT_ATELIER_PASSWORD = pw;
+    // Mémorisé pour cet onglet uniquement (sessionStorage) : évite de retaper le mot de
+    // passe à chaque code-barre envoyé depuis le site des envois. Effacé à la fermeture
+    // de l'onglet, ou par le bouton "Se déconnecter".
+    try{ sessionStorage.setItem(ATELIER_PW_SESSION_KEY, pw); }catch(e){}
     atelierLoginView.style.display = 'none';
     atelierMainView.style.display = 'block';
     atelierRenderPool();
-    if(pendingBarcodeRef){
-      const ref = pendingBarcodeRef;
-      pendingBarcodeRef = null;
-      atelierShowSubTab('barcode');
-      barcodeRefInput.value = ref;
-      atelierGenerateAndPrintBarcode();
-    }
+    atelierRunPendingBarcode();
   } else {
     atelierLoginError.classList.add('show');
   }
 });
 atelierPassword.addEventListener('keydown', (e) => { if(e.key==='Enter') atelierLoginBtn.click(); });
-atelierLogoutBtn.addEventListener('click', () => { resetAtelierToLogin(); });
+atelierLogoutBtn.addEventListener('click', () => { atelierLogout(); });
 
 /* Changer le mot de passe Atelier (indépendant de l'Admin, même mécanisme) */
 const atelierPwOld = document.getElementById('atelierPwOld');
@@ -5017,7 +5079,7 @@ atelierPwChangeBtn.addEventListener('click', async () => {
     atelierPwChangeSuccess.textContent = 'Mot de passe modifié avec succès. Vous allez être déconnecté — reconnectez-vous avec le nouveau mot de passe.';
     atelierPwChangeSuccess.classList.add('show');
     atelierPwOld.value = ''; atelierPwNew.value = ''; atelierPwNew2.value = '';
-    setTimeout(() => { resetAtelierToLogin(); }, 2000);
+    setTimeout(() => { atelierLogout(); }, 2000);
   } catch(err){
     atelierPwChangeError.textContent = "Impossible de contacter l'API. Cette fonctionnalité nécessite que le site soit déployé sur Netlify avec les fonctions serveur actives.";
     atelierPwChangeError.classList.add('show');
@@ -5046,6 +5108,112 @@ function atelierLoadLibs(){
     document.head.appendChild(s1);
   });
   return atelierLibsPromise;
+}
+
+/* ---- Compression des fiches trop lourdes avant dépôt ----
+   La fonction Netlify tourne sur AWS Lambda : 6 Mo maximum pour le corps d'une requête.
+   Les fiches sont envoyées en base64 (+33 %) dans du JSON, d'où un plafond réel d'environ
+   4 Mo de PDF brut. Au-delà, on tente de compresser avant de refuser.
+
+   ATTENTION — la fusion (atelierExtractPageRecord) lit la COUCHE TEXTE des PDF pour trouver
+   le numéro de job JXXXXXX, repérer les pages "FORMULAIRE" et exclure les Colissimo.
+   Rastériser bêtement un PDF détruirait cette couche et casserait tout le tri. D'où deux
+   étapes, de la moins destructrice à la plus efficace :
+     1. Compression SANS perte (réécriture pdf-lib avec object streams). Rapide, fidélité
+        parfaite, mais gain quasi nul sur un PDF contenant de grosses images.
+     2. Rastérisation JPEG progressive AVEC réinjection du texte d'origine en calque
+        invisible (opacity 0) : l'image devient légère et pdf.js retrouve malgré tout
+        l'intégralité du texte, donc les numéros de job et les pages FORMULAIRE restent
+        détectés. Vérifié sur fiches de test : 9,6 Mo -> 1,9 Mo, texte identique au caractère
+        près, tous les numéros de job préservés. */
+const ATELIER_MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // 4 Mo de PDF brut ~= 5,5 Mo une fois en base64
+
+function atelierFormatSize(bytes){
+  return bytes >= 1024*1024
+    ? (bytes/(1024*1024)).toFixed(1) + ' Mo'
+    : (bytes/1024).toFixed(0) + ' Ko';
+}
+
+function atelierBytesToBase64(bytes){
+  // Conversion par tranches : String.fromCharCode.apply sature la pile sur un gros fichier.
+  let bin = '';
+  const CHUNK = 0x8000;
+  for(let i=0; i<bytes.length; i+=CHUNK){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i+CHUNK));
+  }
+  return btoa(bin);
+}
+
+function atelierFileToBytes(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(new Uint8Array(r.result));
+    r.onerror = () => reject(new Error('Lecture du fichier impossible.'));
+    r.readAsArrayBuffer(file);
+  });
+}
+
+// Helvetica (encodage WinAnsi) ne sait pas coder tous les caractères Unicode : pdf-lib
+// lèverait une erreur. Les accents français passent, le reste devient une espace.
+function atelierSanitizeWinAnsi(s){
+  return s.replace(/[^\x20-\x7E -ÿ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+async function atelierLosslessShrink(bytes){
+  const { PDFDocument } = PDFLib;
+  const doc = await PDFDocument.load(bytes.slice(0), { ignoreEncryption: true });
+  return new Uint8Array(await doc.save({ useObjectStreams: true }));
+}
+
+// Rastérise chaque page en JPEG, puis redessine le texte d'origine par-dessus en
+// totalement transparent : invisible à l'œil et à l'impression, mais getTextContent()
+// le retrouve intégralement, donc la fusion continue de trier par numéro de job.
+async function atelierRasterizeKeepingText(bytes, dpi, quality){
+  const { PDFDocument, StandardFonts } = PDFLib;
+  const src = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+  const out = await PDFDocument.create();
+  const font = await out.embedFont(StandardFonts.Helvetica);
+  const scale = dpi / 72; // pdf.js : échelle 1 = 72 DPI
+  for(let i=1; i<=src.numPages; i++){
+    const page = await src.getPage(i);
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(viewport.width));
+    canvas.height = Math.max(1, Math.round(viewport.height));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // évite un fond noir sur les PDF transparents
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const jpg = await out.embedJpg(canvas.toDataURL('image/jpeg', quality));
+    const base = page.getViewport({ scale: 1 }); // taille d'origine en points
+    const p = out.addPage([base.width, base.height]);
+    p.drawImage(jpg, { x:0, y:0, width: base.width, height: base.height });
+
+    const text = atelierSanitizeWinAnsi((await page.getTextContent()).items.map(it => it.str).join(' '));
+    if(text){
+      p.drawText(text, { x:2, y: base.height - 8, size:6, font, opacity:0, maxWidth: base.width - 4, lineHeight:7 });
+    }
+    canvas.width = 0; canvas.height = 0; // libère la mémoire au fil des pages
+  }
+  return new Uint8Array(await out.save({ useObjectStreams: true }));
+}
+
+async function atelierCompressPdf(bytes, setStatus){
+  await atelierLoadLibs();
+  // 1. Sans perte d'abord : si ça suffit, le PDF reste strictement intact.
+  setStatus('compression sans perte…');
+  const lossless = await atelierLosslessShrink(bytes);
+  const best0 = lossless.length < bytes.length ? lossless : bytes;
+  if(best0.length <= ATELIER_MAX_UPLOAD_BYTES) return { bytes: best0, rasterized: false };
+
+  // 2. Sinon rastérisation progressive, texte réinjecté à chaque fois.
+  let best = best0;
+  for(const s of [ {dpi:150, q:0.72}, {dpi:120, q:0.60}, {dpi:100, q:0.50} ]){
+    setStatus(`compression image ${s.dpi} DPI…`);
+    best = await atelierRasterizeKeepingText(bytes, s.dpi, s.q);
+    if(best.length <= ATELIER_MAX_UPLOAD_BYTES) break;
+  }
+  return { bytes: best, rasterized: true };
 }
 
 /* ---- Dépôt (sélection en cours, pas encore envoyée) ---- */
@@ -5079,11 +5247,44 @@ atelierDropzone.addEventListener('drop', (e) => {
 atelierFileInput.addEventListener('change', () => { atelierAddFiles([...atelierFileInput.files]); atelierFileInput.value=''; });
 
 function atelierAddFiles(files){
+  const added = [];
   files.forEach(f => {
     if(f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')){
-      atelierPendingFiles.push({ file: f, id: crypto.randomUUID() });
+      const item = { file: f, id: crypto.randomUUID(), bytes: null, size: f.size, status: 'ready', note: '' };
+      atelierPendingFiles.push(item);
+      added.push(item);
     }
   });
+  atelierRenderFileList();
+  // Les fiches trop lourdes sont compressées tout de suite : l'opticien voit le résultat
+  // dans la liste avant même de cliquer sur "Ajouter au dépôt".
+  added.filter(it => it.size > ATELIER_MAX_UPLOAD_BYTES).forEach(atelierProcessOversized);
+}
+
+async function atelierProcessOversized(item){
+  const originalSize = item.size;
+  item.status = 'processing';
+  item.note = 'analyse…';
+  atelierRenderFileList();
+  try{
+    const bytes = await atelierFileToBytes(item.file);
+    const { bytes: out, rasterized } = await atelierCompressPdf(bytes, (msg) => {
+      item.note = msg;
+      atelierRenderFileList();
+    });
+    if(out.length > ATELIER_MAX_UPLOAD_BYTES){
+      item.status = 'error';
+      item.note = `trop lourd même après compression (${atelierFormatSize(out.length)}) — rescannez cette fiche en qualité réduite ou en noir et blanc`;
+    } else {
+      item.bytes = out;
+      item.size = out.length;
+      item.status = 'ready';
+      item.note = `compressé depuis ${atelierFormatSize(originalSize)}${rasterized ? ' (image allégée, texte conservé)' : ' (sans perte)'}`;
+    }
+  } catch(e){
+    item.status = 'error';
+    item.note = 'compression impossible : ' + (e.message || 'erreur inconnue');
+  }
   atelierRenderFileList();
 }
 
@@ -5092,7 +5293,9 @@ function atelierRenderFileList(){
   atelierPendingFiles.forEach(item => {
     const row = document.createElement('div');
     row.className = 'file-chip';
-    row.innerHTML = `<span>${item.file.name} <span style="color:var(--ink-soft);">(${(item.file.size/1024).toFixed(0)} Ko)</span></span><span class="rm" data-id="${item.id}">Retirer</span>`;
+    const color = item.status === 'error' ? '#DC2626' : 'var(--ink-soft)';
+    const note = item.note ? ` <span style="color:${color};">— ${escapeHtml(item.note)}</span>` : '';
+    row.innerHTML = `<span>${escapeHtml(item.file.name)} <span style="color:var(--ink-soft);">(${atelierFormatSize(item.size)})</span>${note}</span><span class="rm" data-id="${item.id}">Retirer</span>`;
     atelierFileListEl.appendChild(row);
   });
   atelierFileListEl.querySelectorAll('.rm').forEach(el => {
@@ -5101,7 +5304,9 @@ function atelierRenderFileList(){
       atelierRenderFileList();
     });
   });
-  atelierAddDepositBtn.disabled = atelierPendingFiles.length === 0;
+  // On n'autorise l'envoi que si tout est prêt : aucune compression en cours, aucun fichier en erreur.
+  const blocked = atelierPendingFiles.some(f => f.status !== 'ready');
+  atelierAddDepositBtn.disabled = atelierPendingFiles.length === 0 || blocked;
 }
 
 function atelierFileToBase64(file){
@@ -5123,7 +5328,8 @@ atelierAddDepositBtn.addEventListener('click', async () => {
   const depositor = atelierDepositorInput.value.trim() || 'Non renseigné';
   try{
     for(const item of atelierPendingFiles){
-      const base64 = await atelierFileToBase64(item.file);
+      // item.bytes n'est rempli que si le fichier a dû être compressé.
+      const base64 = item.bytes ? atelierBytesToBase64(item.bytes) : await atelierFileToBase64(item.file);
       const res = await fetch(ATELIER_API, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
@@ -6626,21 +6832,25 @@ function renderVisibilityPanel(){
       <div class="visibility-reseau-title">${escapeHtml(reseau)}</div>`;
     mutuelles.forEach(m => {
       const visible = isMutuelleVisible(m);
-      html += `<label class="visibility-row">
+      // NB : surtout pas de <label> ici — un clic n'importe où dans un label est renvoyé
+      // au premier contrôle qu'il contient (le bouton 🗑), ce qui déclenchait la suppression
+      // dès qu'on cliquait sur l'interrupteur "masquer".
+      html += `<div class="visibility-row">
         <span>${escapeHtml(m)}</span>
-        <span style="display:flex;align-items:center;gap:10px;">
+        <span class="visibility-actions">
           <span class="visibility-status ${visible?'on':''}">${visible?'Actif':'Masqué'}</span>
-          <span class="toggle-switch ${visible?'on':''}" data-mutuelle="${escapeHtml(m)}"></span>
-          <button type="button" class="memo-remove-btn" data-reseau="${escapeHtml(reseau)}" data-mutuelle="${escapeHtml(m)}" data-del-mutuelle="1" title="Supprimer cette mutuelle">🗑</button>
+          <span class="toggle-switch ${visible?'on':''}" data-mutuelle="${escapeHtml(m)}" title="Masquer / afficher cette mutuelle"></span>
+          <button type="button" class="memo-remove-btn visibility-del" data-reseau="${escapeHtml(reseau)}" data-mutuelle="${escapeHtml(m)}" data-del-mutuelle="1" title="Supprimer définitivement cette mutuelle">🗑</button>
         </span>
-      </label>`;
+      </div>`;
     });
     html += `</div>`;
   });
   precosVisibilityPanel.innerHTML = html;
 
   precosVisibilityPanel.querySelectorAll('.toggle-switch').forEach(el => {
-    el.addEventListener('click', () => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
       const m = el.dataset.mutuelle;
       const newState = !isMutuelleVisible(m);
       PRECOS_VISIBILITY[m] = newState;
@@ -6654,7 +6864,9 @@ function renderVisibilityPanel(){
   });
 
   precosVisibilityPanel.querySelectorAll('[data-del-mutuelle]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
       const reseau = btn.dataset.reseau;
       const m = btn.dataset.mutuelle;
       if(!confirm(`Supprimer définitivement "${m}" (${reseau}) et tous ses verres ? Cette action ne peut pas être annulée.`)) return;
@@ -6755,7 +6967,7 @@ function renderVerresMgmtPanel(){
         <select class="verres-mgmt-select${overridden?' overridden':''}" data-key="${escapeHtml(key)}">
           ${VERRES_TYPE_OPTIONS.map(t => `<option value="${t}"${t===effectiveType?' selected':''}>${VERRES_TYPE_LABELS[t]}</option>`).join('')}
         </select>
-        <button type="button" class="memo-remove-btn" data-key="${escapeHtml(key)}" data-del-verre="1" title="Supprimer ce verre">🗑</button>
+        <button type="button" class="memo-remove-btn visibility-del" data-key="${escapeHtml(key)}" data-del-verre="1" title="Supprimer définitivement ce verre">🗑</button>
       </div>
     </div>`;
   });
@@ -8030,18 +8242,35 @@ loadPrecosData();
 loadLensFormulas();
 loadSavMemos();
 
-/* Lien direct depuis le bookmarklet "Générer code-barre" (?barcode_ref=...) :
-   ouvre directement l'onglet Dépôt Fiches Atelier, prêt pour le mot de passe ;
-   une fois connecté, la référence est auto-remplie et imprimée (voir atelierLoginBtn). */
+/* ---- Bookmarklet "Générer code-barre" ----
+   Deux chemins d'entrée :
+   1. ?barcode_ref=... quand le bookmarklet a dû ouvrir un nouvel onglet (Tool Box fermé).
+   2. Un postMessage {type:'barcode-ref'} quand un onglet Tool Box était déjà ouvert : on
+      réutilise la session atelier en cours, donc aucun mot de passe à retaper. */
+function atelierHandleBarcodeRequest(ref){
+  pendingBarcodeRef = String(ref);
+  const atelierEntry = TABS.find(t => t.btn === tabAtelier);
+  if(atelierEntry) activateTab(atelierEntry); // déclenche resetAtelierToLogin -> session ou login
+}
+
 (function initBarcodeDeepLink(){
   const params = new URLSearchParams(location.search);
   const ref = params.get('barcode_ref');
   if(!ref) return;
-  pendingBarcodeRef = ref;
   history.replaceState(null, '', location.pathname + location.hash);
-  const atelierEntry = TABS.find(t => t.btn === tabAtelier);
-  if(atelierEntry) activateTab(atelierEntry);
+  atelierHandleBarcodeRequest(ref);
 })();
+
+window.addEventListener('message', (e) => {
+  const data = e.data;
+  if(!data || data.type !== 'barcode-ref' || typeof data.ref !== 'string' || !data.ref.trim()) return;
+  // Accusé de réception : sans lui le bookmarklet croirait l'onglet absent et en ouvrirait un.
+  if(e.source && typeof e.source.postMessage === 'function'){
+    try{ e.source.postMessage({ type: 'barcode-ref-ack' }, '*'); }catch(err){}
+  }
+  window.focus();
+  atelierHandleBarcodeRequest(data.ref.trim());
+});
 </script>
 </body>
 </html>
