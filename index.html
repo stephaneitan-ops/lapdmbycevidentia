@@ -43,7 +43,11 @@
   }
   .sidebar-brand{padding:0 10px;}
   .brand-row{display:flex;align-items:center;gap:11px;}
-  .brand-icon{flex:none;width:26px;height:26px;color:#fff;}
+  .brand-icon-frame{
+    flex:none;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--brass);border-radius:9px;background:rgba(255,109,27,.08);
+  }
+  .brand-icon{flex:none;width:22px;height:22px;color:#fff;}
   .sidebar-brand .brand-name{
     font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;
     color:#fff;letter-spacing:-0.01em;line-height:1.15;
@@ -632,16 +636,20 @@
   <aside class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-row">
+        <div class="brand-icon-frame">
         <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2.5" y="8.5" width="19" height="10" rx="1.6"/>
           <path d="M8 8.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2.5"/>
           <path d="M2.5 13.2h19"/>
           <path d="M10.5 11.5v3.4M13.5 11.5v3.4"/>
         </svg>
+        </div>
         <div>
           <div class="brand-name">Tool Box</div>
           <div class="brand-sub">by C·Evidentia</div>
-          <div class="brand-version">v1.1</div>
+          <!-- Numéro de version : incrémenté à la main à chaque livraison.
+               y (mineur) +1 à chaque modif livrée ; x (majeur) +1 (y->0) pour un changement structurel important. -->
+          <div class="brand-version">V2.4</div>
         </div>
       </div>
     </div>
@@ -673,9 +681,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span>Procédure RA</span>
       </button>
-      <button class="nav-item" id="tabAtelier" type="button" title="Dépôt Fiche Atelier / SAV">
+      <button class="nav-item" id="tabAtelier" type="button" title="Dépôt Fiches Atelier">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-        <span>Dépôt Atelier / SAV</span>
+        <span>Dépôt Fiches Atelier</span>
       </button>
       <button class="nav-item" id="tabSuivi" type="button" title="Suivi Fournisseur">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 4 5-8"/></svg>
@@ -697,10 +705,24 @@
 
   <div id="viewSuivi" style="display:none;">
 
-  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
     <input type="text" id="suiviNewJob" placeholder="Numéro de Job (ex. J101110767)" autocomplete="off"
            style="flex:1;min-width:220px;border:1.5px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:14px;font-family:'IBM Plex Sans',sans-serif;">
+    <select id="suiviNewFournisseur"
+            style="border:1.5px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:14px;font-family:'IBM Plex Sans',sans-serif;background:var(--panel);">
+      <option value="">Fournisseur…</option>
+      <option value="luxo">Luxo</option>
+      <option value="opal demetz">Opal Demetz</option>
+      <option value="minima">Minima</option>
+      <option value="french">French (mail — non automatisé)</option>
+    </select>
     <button id="suiviAddJobBtn" type="button" class="btn-ghost-link">+ Ajouter au suivi</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;background:var(--brass-soft);border-radius:var(--radius);font-size:12.5px;color:var(--ink-soft);">
+    <span>🔖 Glisse ce lien dans ta barre de favoris. Ouvre-le ensuite depuis <strong>app.cevidentia.com</strong> une fois connecté : il complète automatiquement client + réf. monture pour les Job en attente.</span>
+    <a id="suiviBookmarklet" href="javascript:!function()%7B%22use%20strict%22%3Bvar%20e%2Cn%2Cr%2Ct%3D%22https%3A%2F%2Flapdmbycevidentia.netlify.app%2F.netlify%2Ffunctions%2Fdata%22%2Co%3D%22suivi_fournisseur%22%2Ci%3D%22sf_toolbox_admin_pw_cache%22%3Bfunction%20u(e)%7Bif(!e)return%22%22%3Bvar%20n%3Dnew%20Date(e)%3Bif(isNaN(n))return%22%22%3Bvar%20r%3Dfunction(e)%7Breturn%20String(e).padStart(2%2C%220%22)%7D%3Breturn%20r(n.getDate())%2B%22%2F%22%2Br(n.getMonth()%2B1)%2B%22%2F%22%2Bn.getFullYear()%7Dfunction%20a(e%2Cn)%7Breturn%20fetch(location.origin%2Be%2C%7Bheaders%3A%7BAuthorization%3A%22Bearer%20%22%2Bn%7D%2Ccredentials%3A%22include%22%7D).then(function(n)%7Bif(!n.ok)throw%20new%20Error(%22HTTP%20%22%2Bn.status%2B%22%20sur%20%22%2Be)%3Breturn%20n.json()%7D)%7Dfunction%20s(e%2Cn)%7Breturn%20a(%22%2Fadmin%2Fcustomers%3Fpage%3D1%26search%3D%22%2BencodeURIComponent(e.trim())%2Cn).then(function(r)%7Bvar%20t%3Dr%26%26r.data%7C%7C%5B%5D%3Bif(!t.length)return%20null%3Bvar%20o%3DPromise.resolve(null)%3Breturn%20t.forEach(function(r)%7Bo%3Do.then(function(t)%7Breturn%20t%7C%7Ca(%22%2Fadmin%2Forders%3Fcustomer_id%3D%22%2Br.id%2B%22%26order_by_creation%3Ddesc%22%2Cn).catch(function()%7Breturn%20a(%22%2Fadmin%2Forders%3Fcustomer_id%3D%22%2Br.id%2Cn)%7D).then(function(n)%7Bvar%20t%3Dfunction(e%2Cn)%7Bfor(var%20r%3Dn.trim().toUpperCase()%2Ct%3D0%3Bt%3Ce.length%3Bt%2B%2B)%7Bvar%20o%3De%5Bt%5D%2Ci%3Do.delivery%26%26o.delivery.wing_ref%3Bif(i%26%26String(i).trim().toUpperCase()%3D%3D%3Dr)return%20o%7Dreturn%20null%7D(n%26%26n.data%7C%7C%5B%5D%2Ce)%3Breturn%20t%3Ffunction(e%2Cn)%7Bvar%20r%3De.order_items%26%26e.order_items%5B0%5D%2Ct%3Dr%26%26r.orderable%26%26r.orderable.glasses%3Breturn%7Bclient%3An%3F(n.first_name%2B%22%20%22%2Bn.last_name).trim()%3A%22%22%2Cdate_commande%3Au(e.created_at)%2Cref_monture%3At%26%26(t.label%7C%7Ct.reference)%7C%7C%22%22%2Csku%3At%26%26t.sku%7C%7C%22%22%7D%7D(t%2Cr)%3Anull%7D)%7D)%7D)%2Co%7D)%7De%3D%22access_token%22%2C(r%3D(n%3Ddocument.cookie.match(new%20RegExp(%22(%3F%3A%5E%7C%3B%20)%22%2Be%2B%22%3D(%5B%5E%3B%5D*)%22)))%3FdecodeURIComponent(n%5B1%5D)%3Anull)%3Ffetch(t%2B%22%3Fkey%3D%22%2Bo).then(function(e)%7Breturn%20e.json()%7D).then(function(e)%7Breturn%20e.value%3F%22string%22%3D%3Dtypeof%20e.value%3FJSON.parse(e.value)%3Ae.value%3A%7B%7D%7D).then(function(e)%7Bvar%20n%3DObject.keys(e).filter(function(n)%7Bvar%20r%3De%5Bn%5D%7C%7C%7B%7D%3Breturn%20r.fournisseur%26%26(!r.client%7C%7C!r.ref_monture)%7D)%3Bif(n.length)%7Bif(confirm(n.length%2B%22%20commande(s)%20%C3%A0%20compl%C3%A9ter%20%3A%5Cn%22%2Bn.join(%22%2C%20%22)%2B%22%5Cn%5CnLancer%20la%20recherche%20sur%20C'Evidentia%20%3F%22))%7Bvar%20u%3D%7B%7D%2Ca%3D%5B%5D%2Cc%3DPromise.resolve()%3Bn.forEach(function(e)%7Bc%3Dc.then(function()%7Breturn%20s(e%2Cr).then(function(n)%7Bn%3Fu%5Be%5D%3Dn%3Aa.push(e)%7D).catch(function(n)%7Bconsole.error(%22Suivi%20Fournisseur%20-%20erreur%20sur%22%2Ce%2Cn)%2Ca.push(e%2B%22%20(erreur)%22)%7D)%7D)%7D)%2Cc.then(function()%7Bvar%20r%3DObject.keys(u)%3Bif(r.length)%7Br.forEach(function(n)%7Bvar%20r%3De%5Bn%5D%7C%7C%7B%7D%2Ct%3Du%5Bn%5D%3Bt.client%26%26!r.client%26%26(r.client%3Dt.client)%2Ct.date_commande%26%26!r.date_commande%26%26(r.date_commande%3Dt.date_commande)%2Ct.ref_monture%26%26!r.ref_monture%26%26(r.ref_monture%3Dt.ref_monture)%2Ct.sku%26%26!r.sku%26%26(r.sku%3Dt.sku)%2Ce%5Bn%5D%3Dr%7D)%3Bvar%20s%3DsessionStorage.getItem(i)%7C%7Cprompt(%22Mot%20de%20passe%20Admin%20du%20Tool%20Box%20(pour%20enregistrer)%20%3A%22)%3Bs%3Ffunction(e%2Cn)%7Breturn%20fetch(t%2C%7Bmethod%3A%22POST%22%2Cheaders%3A%7B%22Content-Type%22%3A%22application%2Fjson%22%7D%2Cbody%3AJSON.stringify(%7Bkey%3Ao%2Cvalue%3AJSON.stringify(e)%2Cpassword%3An%7D)%7D).then(function(e)%7Bif(!e.ok)throw%20new%20Error(%22Mot%20de%20passe%20Admin%20refus%C3%A9%20ou%20erreur%20serveur%20(HTTP%20%22%2Be.status%2B%22).%22)%3Breturn%20e.json()%7D)%7D(e%2Cs).then(function()%7BsessionStorage.setItem(i%2Cs)%3Bvar%20e%3Dr.length%2B%22%2F%22%2Bn.length%2B%22%20commande(s)%20compl%C3%A9t%C3%A9e(s)%20et%20envoy%C3%A9e(s)%20au%20Tool%20Box.%22%3Ba.length%26%26(e%2B%3D%22%5Cn%5CnNon%20trouv%C3%A9(es)%20%3A%20%22%2Ba.join(%22%2C%20%22))%2Calert(e)%7D).catch(function(e)%7BsessionStorage.removeItem(i)%2Calert(%22Erreur%20%C3%A0%20l'envoi%20vers%20le%20Tool%20Box%20%3A%20%22%2Be.message)%7D)%3Aalert(%22Annul%C3%A9%20%3A%20rien%20n'a%20%C3%A9t%C3%A9%20envoy%C3%A9%20au%20Tool%20Box.%22)%7Delse%20alert(%22Aucune%20commande%20retrouv%C3%A9e%20sur%20C'Evidentia%20parmi%20%3A%20%22%2Bn.join(%22%2C%20%22))%7D)%7D%7Delse%20alert(%22Rien%20%C3%A0%20compl%C3%A9ter%20%3A%20toutes%20les%20commandes%20suivies%20ont%20d%C3%A9j%C3%A0%20client%20%2B%20r%C3%A9f%C3%A9rence%20monture.%22)%7D).catch(function(e)%7Balert(%22Erreur%20en%20lisant%20les%20donn%C3%A9es%20du%20Tool%20Box%20%3A%20%22%2Be.message)%7D)%3Aalert(%22Impossible%20de%20trouver%20le%20token%20de%20connexion%20C'Evidentia%20(cookie%20access_token).%5CnAssure-toi%20d'%C3%AAtre%20bien%20connect%C3%A9%20sur%20app.cevidentia.com%20dans%20cet%20onglet.%22)%7D()%3B"
+       class="btn-ghost-link" onclick="return false;" title="Glisse-moi dans tes favoris, ne clique pas ici">🔖 Compléter via C'Evidentia</a>
   </div>
 
   <div id="suiviLockBar" style="display:none;align-items:center;gap:8px;margin-bottom:16px;padding:10px 12px;background:var(--brass-soft);border-radius:var(--radius);font-size:12.5px;color:var(--ink-soft);">
@@ -949,12 +971,30 @@
       <button class="precos-type-btn" data-type="Degressifs" type="button">Proximité</button>
     </div>
 
+    <div class="precos-type-filter" id="precosIndiceFilter" style="display:none;">
+      <button class="precos-type-btn active" data-indice="Tous" type="button">Tous les indices</button>
+      <button class="precos-type-btn" data-indice="1.50" type="button">1.50</button>
+      <button class="precos-type-btn" data-indice="1.60" type="button">1.60</button>
+      <button class="precos-type-btn" data-indice="1.67" type="button">1.67</button>
+      <button class="precos-type-btn" data-indice="1.74" type="button">1.74</button>
+    </div>
+
+    <div class="precos-type-filter" id="precosMatFilter" style="display:none;">
+      <button class="precos-type-btn" data-mat="Blanc" type="button">Blanc</button>
+      <button class="precos-type-btn" data-mat="Sensity" type="button">Sensity</button>
+    </div>
+
     <div class="empty-state" id="precosEmptyState">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="17" cy="17" r="11" stroke="#B7B2A2" stroke-width="2"/><path d="M25 25l8 8" stroke="#B7B2A2" stroke-width="2" stroke-linecap="round"/></svg>
       <p>Sélectionnez le réseau puis la mutuelle du client pour afficher les verres à préconiser.</p>
     </div>
 
     <div id="precosResults"></div>
+
+    <div class="sav-card" style="max-width:none;margin-top:20px;">
+      <h2>Mémos & rappels</h2>
+      <div class="memo-grid" id="precosMemosPublic"></div>
+    </div>
 
     <div class="footer">
       <div class="meta" id="precosDbMeta">Chargement des données…</div>
@@ -964,22 +1004,24 @@
 
   <div id="viewSav" style="display:none;">
 
-    <div class="sav-card">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0A5FCB" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-      <h2>Formulaire SAV Lunettes</h2>
-      <p class="sub">À transmettre rapidement au client pour sa demande de service après-vente.</p>
+    <div class="sav-card" style="max-width:none;padding:16px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:12px;flex:none;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0A5FCB" stroke-width="1.8" style="flex:none;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <div>
+          <h2 style="margin:0;font-size:15px;">Formulaire SAV Lunettes</h2>
+        </div>
+      </div>
 
-      <div class="sav-link-row">
+      <div class="sav-link-row" style="flex:1;min-width:260px;margin:0;">
         <span id="savLinkText">cevidentia.com/service-apres-vente-lunettes</span>
         <button class="btn-ghost-link" id="savCopyBtn" type="button">Copier le lien</button>
       </div>
 
-      <a class="btn-ghost-link" href="https://cevidentia.com/service-apres-vente-lunettes" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:14px;">Ouvrir dans un nouvel onglet ↗</a>
+      <a class="btn-ghost-link" href="https://cevidentia.com/service-apres-vente-lunettes" target="_blank" rel="noopener noreferrer">Ouvrir ↗</a>
     </div>
 
-    <div class="sav-card" style="max-width:none;margin-top:20px;">
+    <div class="sav-card" style="max-width:none;margin-top:16px;">
       <h2>Mémos & rappels</h2>
-      <p class="sub">Notes utiles laissées par l'équipe — gérées depuis l'onglet Admin.</p>
       <div class="memo-grid" id="savMemosPublic"></div>
     </div>
 
@@ -1016,6 +1058,7 @@
         <button class="admin-subtab-btn" data-subtab="mutuelles" type="button">Gestion mutuelles</button>
         <button class="admin-subtab-btn" data-subtab="verres" type="button">Gestion verres</button>
         <button class="admin-subtab-btn" data-subtab="ra" type="button">Gestion RA</button>
+        <button class="admin-subtab-btn" data-subtab="lentilles" type="button">Lentilles</button>
         <button class="admin-subtab-btn" data-subtab="formulas" type="button">Règles de calcul</button>
         <button class="admin-subtab-btn" data-subtab="memos" type="button">Mémos SAV</button>
         <button class="admin-subtab-btn" data-subtab="passwords" type="button">Mots de passe</button>
@@ -1127,6 +1170,18 @@
         </div>
       </div>
 
+      <div class="admin-subview" id="adminSubview-lentilles" style="display:none;">
+        <div class="admin-card" style="max-width:420px;">
+          <h2>Lentilles — PMSS</h2>
+          <p class="sub">Utilisé pour calculer automatiquement les forfaits exprimés en % du PMSS (ex. "10,6% PMSS") dans l'onglet Préconisations, réseau "Lentilles". À mettre à jour une fois par an.</p>
+          <div class="modal-error" id="lentillesPmssError"></div>
+          <div class="modal-success" id="lentillesPmssSuccess"></div>
+          <label for="lentillesPmssInput">PMSS mensuel (€)</label>
+          <input type="text" id="lentillesPmssInput" placeholder="Ex. 3925">
+          <button class="btn btn-primary" id="lentillesPmssSaveBtn" style="width:auto;padding:11px 22px;margin-top:14px;">Enregistrer</button>
+        </div>
+      </div>
+
       <div class="admin-subview" id="adminSubview-formulas" style="display:none;">
       <div class="admin-card" id="coteBFormulasCard">
         <h2>Règles de calcul — Hauteur Cote B</h2>
@@ -1141,8 +1196,8 @@
 
       <div class="admin-subview" id="adminSubview-memos" style="display:none;">
       <div class="admin-card" id="savMemosCard">
-        <h2>Mémos SAV (post-it)</h2>
-        <p class="sub">Notes visibles par tous les opticiens sur l'onglet SAV. Choisissez une couleur, écrivez un texte ou ajoutez une image.</p>
+        <h2>Mémos (post-it)</h2>
+        <p class="sub">Notes visibles par tous les opticiens. Choisissez une couleur, un texte et/ou une image, et où le mémo doit apparaître (SAV, Préconisations, ou les deux).</p>
         <div class="modal-error" id="savMemosError"></div>
         <div class="modal-success" id="savMemosSuccess"></div>
         <div id="savMemosAdminList"></div>
@@ -1209,7 +1264,6 @@
 
       <div class="admin-card" style="margin-bottom:20px;">
         <h2>1. Déposer des fiches</h2>
-        <p class="sub">Chaque personne peut déposer à son propre moment dans la journée. Précise le jour concerné si tu déposes en retard ou en avance — les dépôts de jours différents ne se mélangent jamais entre eux.</p>
 
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
           <div style="flex:2;min-width:200px;">
@@ -1237,7 +1291,6 @@
 
       <div class="admin-card" style="margin-bottom:20px;">
         <h2>Vérifier une fiche précise</h2>
-        <p class="sub">Recherche un numéro de job pour confirmer qu'il a bien été reçu, y compris un jour précédent déjà fusionné.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input type="text" id="atelierSearchInput" placeholder="Ex. J101055210 ou 101055210" style="flex:1;min-width:220px;">
           <button class="btn btn-ghost" id="atelierSearchBtn" style="width:auto;margin-top:0;padding:11px 18px;">Rechercher</button>
@@ -1280,20 +1333,24 @@
 
       <div class="admin-card" style="margin-bottom:20px;">
         <h2>Journal — jours déjà fusionnés</h2>
-        <p class="sub">Les fichiers PDF sont purgés après téléchargement ; seule cette liste reste conservée indéfiniment pour retrouver qui a déposé quoi et si un job a bien été reçu tel jour.</p>
         <div id="atelierArchiveLog"><div class="sub" id="atelierArchiveEmpty">Aucun jour fusionné pour le moment.</div></div>
       </div>
 
       </div><!-- /atelierSubDeposit -->
 
       <div id="atelierSubBarcode" style="display:none;">
-        <div class="admin-card" style="max-width:480px;margin-bottom:20px;">
+        <div class="admin-card" style="max-width:480px;margin-bottom:14px;">
           <h2>Générateur de code-barres</h2>
-          <p class="sub">Tape une référence, clique sur Générer : une feuille prête à imprimer s'ouvre directement, avec la référence et son code-barres Code 128. Rien n'est enregistré — usage à la volée.</p>
           <label for="barcodeRefInput">Référence</label>
           <input type="text" id="barcodeRefInput" placeholder="Ex. 00164952">
           <div class="modal-error" id="barcodeErr"></div>
           <button class="btn btn-primary" id="barcodeGenBtn" style="width:auto;padding:11px 22px;margin-top:14px;">Générer et imprimer</button>
+        </div>
+        <div class="admin-card" style="max-width:480px;margin-bottom:20px;">
+          <h2>Génération automatique</h2>
+          <p class="sub">Sur le site des envois, sélectionne la référence puis clique sur ce favori : le Tool Box s'ouvre avec la référence déjà remplie et le code-barre est imprimé automatiquement.</p>
+          <a id="atelierBarcodeBookmarklet" href="javascript:!function()%7B%22use%20strict%22%3Bvar%20e%3D(window.getSelection%3Fwindow.getSelection().toString()%3A%22%22).trim()%3Be%26%26window.open(%22https%3A%2F%2Flapdmbycevidentia.netlify.app%2F%3Fbarcode_ref%3D%22%2BencodeURIComponent(e)%2C%22_blank%22)%7D()%3B"
+             class="btn-ghost-link" onclick="return false;" title="Glisse-moi dans tes favoris, ne clique pas ici">🔖 Générer code-barre</a>
         </div>
       </div>
 
@@ -4301,6 +4358,7 @@ let PRECOS_HIER = {};
 let PRECOS_META = { updatedAt: null, source: 'défaut' };
 let PRECOS_VISIBILITY = {};
 let PRECOS_TYPE_OVERRIDES = {};
+let LENTILLES_PMSS_MENSUEL = null; // saisi dans Admin > Lentilles, sert au calcul des forfaits en % du PMSS
 
 function isMutuelleVisible(m){
   return PRECOS_VISIBILITY[m] !== false; // par défaut visible si pas de réglage explicite
@@ -4338,7 +4396,10 @@ function loadPrecosData(){
     .then(() => AppStorage.get('precos-type-overrides'))
     .then(res => { const o = JSON.parse(res.value); if(o) PRECOS_TYPE_OVERRIDES = o; })
     .catch(() => {})
-    .finally(() => { renderPrecosMeta(); populatePrecosReseaux(); renderVisibilityPanel(); populateVerresMgmtReseaux(); });
+    .then(() => AppStorage.get('lentilles-pmss'))
+    .then(res => { const v = parseFloat(res.value); if(!isNaN(v)) LENTILLES_PMSS_MENSUEL = v; })
+    .catch(() => {})
+    .finally(() => { renderPrecosMeta(); populatePrecosReseaux(); renderVisibilityPanel(); populateVerresMgmtReseaux(); renderLentillesPmssField(); });
 }
 
 function renderPrecosMeta(){
@@ -4357,7 +4418,11 @@ const precosMutuelleSelect = document.getElementById('precosMutuelle');
 const precosResults = document.getElementById('precosResults');
 const precosEmptyState = document.getElementById('precosEmptyState');
 const precosTypeFilter = document.getElementById('precosTypeFilter');
+const precosIndiceFilter = document.getElementById('precosIndiceFilter');
+const precosMatFilter = document.getElementById('precosMatFilter');
 let precosActiveType = 'Tous';
+let precosActiveIndice = 'Tous';
+let precosActiveMat = 'Tous';
 
 function classifyPrecosType(category){
   const n = normalize(category);
@@ -4370,6 +4435,20 @@ function classifyPrecosType(category){
 function classifyPrecosRowType(row){
   const override = PRECOS_TYPE_OVERRIDES[precosRowKey(row)];
   return override || classifyPrecosType(row[2]);
+}
+
+const PRECOS_INDICES = ['1.50','1.60','1.67','1.74'];
+function precosRowIndice(row){
+  const name = (row[3] || '').replace(/,/g, '.');
+  for(const ind of PRECOS_INDICES){ if(name.includes(ind)) return ind; }
+  return null;
+}
+
+function precosRowMat(row){
+  const cat = row[2] || '';
+  if(/photochromique/i.test(cat)) return 'Sensity';
+  if(/solaire/i.test(cat)) return 'Solaire';
+  return 'Blanc';
 }
 
 function populatePrecosReseaux(){
@@ -4406,7 +4485,11 @@ precosReseauSelect.addEventListener('change', () => {
 
 precosMutuelleSelect.addEventListener('change', () => {
   precosActiveType = 'Tous';
+  precosActiveIndice = 'Tous';
+  precosActiveMat = 'Tous';
   precosTypeFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'Tous'));
+  precosIndiceFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b.dataset.indice === 'Tous'));
+  precosMatFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.remove('active'));
   renderPrecosResults();
 });
 
@@ -4414,6 +4497,30 @@ precosTypeFilter.querySelectorAll('.precos-type-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     precosActiveType = btn.dataset.type;
     precosTypeFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderPrecosResults();
+  });
+});
+
+precosIndiceFilter.querySelectorAll('.precos-type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    precosActiveIndice = btn.dataset.indice;
+    precosIndiceFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderPrecosResults();
+  });
+});
+
+/* Blanc / Sensity : pas de bouton "Tous" — rien de coché = tout affiché.
+   Cliquer sur un bouton déjà actif le désélectionne (retour à "tout affiché"). */
+precosMatFilter.querySelectorAll('.precos-type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const alreadyActive = btn.classList.contains('active');
+    precosMatFilter.querySelectorAll('.precos-type-btn').forEach(b => b.classList.remove('active'));
+    if(alreadyActive){
+      precosActiveMat = 'Tous';
+    } else {
+      btn.classList.add('active');
+      precosActiveMat = btn.dataset.mat;
+    }
     renderPrecosResults();
   });
 });
@@ -4466,25 +4573,38 @@ function renderPrecosResults(){
   precosResults.innerHTML = '';
   if(!reseau || !mutuelle){
     precosTypeFilter.style.display = 'none';
+    precosIndiceFilter.style.display = 'none';
+    precosMatFilter.style.display = 'none';
     precosEmptyState.style.display = '';
     return;
   }
   const allRows = PRECOS_DATA.filter(r => r[0] === reseau && r[1] === mutuelle);
   if(!allRows.length){
     precosTypeFilter.style.display = 'none';
+    precosIndiceFilter.style.display = 'none';
+    precosMatFilter.style.display = 'none';
     precosEmptyState.style.display = '';
     precosEmptyState.querySelector('p').textContent = "Aucune préconisation enregistrée pour cette mutuelle pour l'instant.";
     return;
   }
   precosTypeFilter.style.display = 'flex';
+  precosIndiceFilter.style.display = 'flex';
+  precosMatFilter.style.display = 'flex';
 
-  const rows = precosActiveType === 'Tous'
+  let rows = precosActiveType === 'Tous'
     ? allRows
     : allRows.filter(r => classifyPrecosRowType(r) === precosActiveType);
 
+  if(precosActiveIndice !== 'Tous'){
+    rows = rows.filter(r => precosRowIndice(r) === precosActiveIndice);
+  }
+  if(precosActiveMat !== 'Tous'){
+    rows = rows.filter(r => precosRowMat(r) === precosActiveMat);
+  }
+
   if(!rows.length){
     precosEmptyState.style.display = '';
-    precosEmptyState.querySelector('p').textContent = "Aucun verre de ce type pour cette mutuelle.";
+    precosEmptyState.querySelector('p').textContent = "Aucun verre ne correspond à ces filtres pour cette mutuelle.";
     return;
   }
   precosEmptyState.style.display = 'none';
@@ -4508,12 +4628,24 @@ function renderPrecosResults(){
   Object.keys(groups).forEach(cat => {
     html += `<div class="precos-group"><div class="precos-group-title">${escapeHtml(cat)}</div>`;
     groups[cat].forEach(r => {
-      const [ , , , name, code, price ] = r;
-      const priceLabel = (price === null || price === undefined) ? '—' : (price === 0 ? 'Inclus' : formatNum(price) + ' €');
+      const [ reseauR, , , name, code, price, pct ] = r;
+      let priceLabel, codeLabel = code;
+      if(price !== null && price !== undefined){
+        priceLabel = price === 0 ? 'Inclus' : formatNum(price) + ' €';
+      } else if(reseauR === 'Lentilles' && pct){
+        if(LENTILLES_PMSS_MENSUEL){
+          priceLabel = formatNum((pct/100) * LENTILLES_PMSS_MENSUEL) + ' € (' + formatNum(pct) + '% PMSS)';
+        } else {
+          priceLabel = formatNum(pct) + '% du PMSS';
+          codeLabel = 'PMSS non configuré — à saisir dans Admin > Lentilles';
+        }
+      } else {
+        priceLabel = '—';
+      }
       html += `<div class="precos-item">
         <div>
           <div class="precos-item-name">${escapeHtml(name)}</div>
-          ${code ? `<div class="precos-item-code">${escapeHtml(code)}</div>` : ''}
+          ${codeLabel ? `<div class="precos-item-code">${escapeHtml(codeLabel)}</div>` : ''}
         </div>
         <div class="precos-item-price${price===0?' zero':''}">${priceLabel}</div>
       </div>`;
@@ -4782,6 +4914,7 @@ if(pwChangeBtn){
 const ATELIER_API = '/.netlify/functions/atelier';
 const ATELIER_PASSWORD_FALLBACK = 'Atelier2026'; // repli local, utilisé uniquement quand l'API serveur n'est pas déployée (tests dans Claude)
 let CURRENT_ATELIER_PASSWORD = null;
+let pendingBarcodeRef = null; // rempli via le lien ?barcode_ref=... (bookmarklet "Générer code-barre")
 
 const atelierLoginView = document.getElementById('atelierLoginView');
 const atelierMainView = document.getElementById('atelierMainView');
@@ -4827,6 +4960,13 @@ atelierLoginBtn.addEventListener('click', async () => {
     atelierLoginView.style.display = 'none';
     atelierMainView.style.display = 'block';
     atelierRenderPool();
+    if(pendingBarcodeRef){
+      const ref = pendingBarcodeRef;
+      pendingBarcodeRef = null;
+      atelierShowSubTab('barcode');
+      barcodeRefInput.value = ref;
+      atelierGenerateAndPrintBarcode();
+    }
   } else {
     atelierLoginError.classList.add('show');
   }
@@ -5465,24 +5605,34 @@ function loadSavMemos(){
       if(Array.isArray(arr)) SAV_MEMOS = arr;
     })
     .catch(() => {})
-    .finally(() => { renderSavMemosPublic(); renderSavMemosAdmin(); });
+    .finally(() => { renderSavMemosPublic(); renderPrecosMemosPublic(); renderSavMemosAdmin(); });
 }
 
-function renderSavMemosPublic(){
-  const el = document.getElementById('savMemosPublic');
+function renderMemoCard(m){
+  return `
+    <div class="memo-card" style="background:${m.color || '#FFF3C0'};">
+      ${m.title ? `<div class="memo-title">${escapeHtml(m.title)}</div>` : ''}
+      ${m.image ? `<img src="${m.image}" alt="">` : ''}
+      ${m.text ? `<div class="memo-text">${escapeHtml(m.text)}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderMemosInto(elId, location){
+  const el = document.getElementById(elId);
   if(!el) return;
-  if(SAV_MEMOS.length === 0){
+  // Rétrocompatibilité : les mémos créés avant l'ajout de l'emplacement
+  // n'ont pas de champ `location` -> on les traite comme "sav" (comportement d'origine).
+  const list = SAV_MEMOS.filter(m => (m.location || 'sav') === location || (m.location || 'sav') === 'both');
+  if(list.length === 0){
     el.innerHTML = '<div class="memo-empty">Aucun mémo pour le moment.</div>';
     return;
   }
-  el.innerHTML = SAV_MEMOS.map(m => `
-    <div class="memo-card" style="background:${m.color || '#FFF3C0'};">
-      ${m.title ? `<div class="memo-title">${escapeHtml(m.title)}</div>` : ''}
-      ${m.type === 'image' && m.image ? `<img src="${m.image}" alt="">` : ''}
-      ${m.type !== 'image' && m.text ? `<div class="memo-text">${escapeHtml(m.text)}</div>` : ''}
-    </div>
-  `).join('');
+  el.innerHTML = list.map(renderMemoCard).join('');
 }
+
+function renderSavMemosPublic(){ renderMemosInto('savMemosPublic', 'sav'); }
+function renderPrecosMemosPublic(){ renderMemosInto('precosMemosPublic', 'precos'); }
 
 function renderSavMemosAdmin(){
   const el = document.getElementById('savMemosAdminList');
@@ -5491,7 +5641,9 @@ function renderSavMemosAdmin(){
     el.innerHTML = '<div class="memo-empty">Aucun mémo. Cliquez sur "+ Ajouter un mémo" pour commencer.</div>';
     return;
   }
-  el.innerHTML = SAV_MEMOS.map((m, i) => `
+  el.innerHTML = SAV_MEMOS.map((m, i) => {
+    const loc = m.location || 'sav';
+    return `
     <div class="memo-admin-row">
       <div class="memo-row-top">
         <input type="text" placeholder="Titre (optionnel)" value="${escapeHtml(m.title||'')}" data-idx="${i}" class="memo-title-input">
@@ -5499,19 +5651,18 @@ function renderSavMemosAdmin(){
           ${MEMO_COLORS.map(c => `<button type="button" class="memo-swatch ${m.color===c?'active':''}" style="background:${c};" data-idx="${i}" data-color="${c}"></button>`).join('')}
         </div>
         <div class="memo-type-toggle">
-          <button type="button" class="${m.type!=='image'?'active':''}" data-idx="${i}" data-type="text">Texte</button>
-          <button type="button" class="${m.type==='image'?'active':''}" data-idx="${i}" data-type="image">Image</button>
+          <button type="button" class="${loc==='sav'?'active':''}" data-idx="${i}" data-loc="sav">SAV</button>
+          <button type="button" class="${loc==='precos'?'active':''}" data-idx="${i}" data-loc="precos">Préconisations</button>
+          <button type="button" class="${loc==='both'?'active':''}" data-idx="${i}" data-loc="both">Les deux</button>
         </div>
         <button type="button" class="memo-remove-btn" data-idx="${i}">Supprimer</button>
       </div>
-      ${m.type === 'image' ? `
-        <input type="file" accept="image/*" data-idx="${i}" class="memo-image-input">
-        ${m.image ? `<img src="${m.image}" class="memo-img-preview">` : ''}
-      ` : `
-        <textarea placeholder="Texte du mémo" data-idx="${i}" class="memo-text-input">${escapeHtml(m.text||'')}</textarea>
-      `}
+      <textarea placeholder="Texte du mémo (optionnel)" data-idx="${i}" class="memo-text-input">${escapeHtml(m.text||'')}</textarea>
+      <input type="file" accept="image/*" data-idx="${i}" class="memo-image-input" style="margin-top:8px;">
+      ${m.image ? `<div style="position:relative;display:inline-block;"><img src="${m.image}" class="memo-img-preview"><button type="button" class="memo-remove-btn" data-idx="${i}" data-clear-image="1" style="display:block;">Retirer l'image</button></div>` : ''}
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   el.querySelectorAll('.memo-title-input').forEach(input => {
     input.addEventListener('input', () => { SAV_MEMOS[parseInt(input.dataset.idx)].title = input.value; });
@@ -5527,11 +5678,17 @@ function renderSavMemosAdmin(){
   });
   el.querySelectorAll('.memo-type-toggle button').forEach(btn => {
     btn.addEventListener('click', () => {
-      SAV_MEMOS[parseInt(btn.dataset.idx)].type = btn.dataset.type;
+      SAV_MEMOS[parseInt(btn.dataset.idx)].location = btn.dataset.loc;
       renderSavMemosAdmin();
     });
   });
-  el.querySelectorAll('.memo-remove-btn').forEach(btn => {
+  el.querySelectorAll('.memo-remove-btn[data-clear-image]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SAV_MEMOS[parseInt(btn.dataset.idx)].image = '';
+      renderSavMemosAdmin();
+    });
+  });
+  el.querySelectorAll('.memo-remove-btn:not([data-clear-image])').forEach(btn => {
     btn.addEventListener('click', () => {
       SAV_MEMOS.splice(parseInt(btn.dataset.idx), 1);
       renderSavMemosAdmin();
@@ -5553,7 +5710,7 @@ function renderSavMemosAdmin(){
 }
 
 document.getElementById('savMemoAddBtn').addEventListener('click', () => {
-  SAV_MEMOS.push({ id: crypto.randomUUID(), color: MEMO_COLORS[0], title:'', type:'text', text:'', image:'' });
+  SAV_MEMOS.push({ id: crypto.randomUUID(), color: MEMO_COLORS[0], title:'', location:'sav', text:'', image:'' });
   renderSavMemosAdmin();
 });
 
@@ -5566,6 +5723,7 @@ document.getElementById('savMemosSaveBtn').addEventListener('click', async () =>
     okEl.textContent = 'Mémos enregistrés.';
     okEl.classList.add('show');
     renderSavMemosPublic();
+    renderPrecosMemosPublic();
   } catch(e){
     errEl.textContent = e.message || "Impossible d'enregistrer.";
     errEl.classList.add('show');
@@ -6021,7 +6179,7 @@ function convExtractPrice(val, fallbackText){
 // de colonne (ex. "Unifocal" / "Progressif" / "Proximité"), avec juste une colonne "Prix" à
 // côté — sans "Nom du verre" ni "Code EDI". Pratique pour ajouter rapidement une nouvelle
 // mutuelle sans reproduire la mise en page complète des autres onglets.
-const CONV_SIMPLE_CAT_WORDS = ['unifocal','unifocaux','progressif','progressifs','prog','proximite','proximites','degressif','degressifs'];
+const CONV_SIMPLE_CAT_WORDS = ['unifocal','unifocaux','progressif','progressifs','prog','proximite','proximites','degressif','degressifs','options'];
 function convIsSimpleCatHeader(v){
   return CONV_SIMPLE_CAT_WORDS.indexOf(normText(v)) >= 0;
 }
@@ -6078,7 +6236,11 @@ function convParseSheet(ws){
   });
 
   simpleHeaders.forEach(([hr,hc]) => {
-    const baseType = convBaseTypeFromText(convCellValue(ws,hr,hc)) || 'Unifocaux';
+    // "Options" (suppléments type Dégradé/Miroir) : catégorie à part, jamais mélangée
+    // avec la classification Unifocaux/Progressifs/Proximité — elle s'affiche comme un
+    // encart séparé dans les résultats, automatiquement, sur les mutuelles qui en ont.
+    const isOptions = normText(convCellValue(ws,hr,hc)) === 'options';
+    const baseType = isOptions ? 'Options' : (convBaseTypeFromText(convCellValue(ws,hr,hc)) || 'Unifocaux');
     let blankStreak = 0;
     let r = hr+1;
     while(r<=maxRow){
@@ -6092,8 +6254,8 @@ function convParseSheet(ws){
       blankStreak = 0;
       const name = String(nameVal).trim().replace(/\s+/g,' ');
       const price = convExtractPrice(convCellValue(ws, r, hc+1), name);
-      const finish = convFinishFromText(name);
-      const displayCategory = finish ? (baseType+' '+finish) : baseType;
+      const finish = isOptions ? null : convFinishFromText(name);
+      const displayCategory = isOptions ? 'Options' : (finish ? (baseType+' '+finish) : baseType);
       if(name && normText(name)!=='0' && name.length>1){
         results.push({category: displayCategory, name, code: null, price});
       }
@@ -6143,6 +6305,66 @@ function convParse100Sante(ws){
   });
   return rows;
 }
+
+/* Onglet "Lentilles" (forfaits par site/mutuelle, pas des verres) : mise en page
+   manuelle (colonnes "Site" / "Forfait"), très hétérogène (montant fixe, % du
+   PMSS, variantes "avec/sans option"...). Regroupement : un même préfixe "AON"
+   sur plusieurs sites différents devient une seule mutuelle "AON" avec une ligne
+   par site (ex. Stellantis sans option / avec option / Salariés) ; les autres
+   sites restent chacun leur propre mutuelle. */
+function lentilleOptionLabel(raw){
+  const s = normText(raw);
+  if(s.indexOf('sans option')>=0) return 'sans option';
+  if(s.indexOf('avec option')>=0) return 'avec option';
+  return null;
+}
+function parseLentilleForfait(raw){
+  if(raw===null || raw===undefined || String(raw).trim()==='') return {price:null, code:null, pct:null};
+  if(typeof raw === 'number') return {price:raw, code:null, pct:null};
+  const s = String(raw).trim();
+  const pctMatch = s.match(/(\d+[.,]?\d*)\s*%/);
+  if(pctMatch) return {price:null, code:s, pct:parseFloat(pctMatch[1].replace(',','.'))};
+  const amtMatch = s.match(/([+]?\d+[.,]?\d*)\s*[€eE]/);
+  if(amtMatch) return {price:parseFloat(amtMatch[1].replace(',','.').replace('+','')), code:null, pct:null};
+  const num = parseFloat(s.replace(',','.'));
+  if(!isNaN(num)) return {price:num, code:null, pct:null};
+  return {price:null, code:s, pct:null};
+}
+function convParseLentillesSheet(ws){
+  const {maxRow} = convSheetDims(ws);
+  let headerRow = null;
+  for(let r=1;r<=maxRow;r++){
+    if(normText(convCellValue(ws,r,1))==='site' && normText(convCellValue(ws,r,2)).indexOf('forfait')===0){ headerRow = r; break; }
+  }
+  if(headerRow===null) return [];
+  const rows = [];
+  for(let r=headerRow+1; r<=maxRow; r++){
+    const siteRaw = convCellValue(ws,r,1);
+    if(siteRaw===null || siteRaw===undefined || String(siteRaw).trim()==='') continue;
+    const site = String(siteRaw).trim();
+    const forfaitRaw = convCellValue(ws,r,2);
+    const optionLabel = lentilleOptionLabel(forfaitRaw);
+    const parsed = parseLentilleForfait(forfaitRaw);
+
+    let mutuelle, remainder;
+    if(/^aon\b/i.test(site)){
+      mutuelle = 'AON';
+      remainder = site.replace(/^aon\s*/i,'').replace(/[()]/g,'').trim() || null;
+    } else {
+      mutuelle = site;
+      remainder = null;
+    }
+    let name;
+    if(remainder && optionLabel) name = remainder+' ('+optionLabel+')';
+    else if(remainder) name = remainder;
+    else if(optionLabel) name = optionLabel.charAt(0).toUpperCase()+optionLabel.slice(1);
+    else name = 'Forfait';
+
+    rows.push({ mutuelle, name, code: parsed.code, price: parsed.price, pct: parsed.pct });
+  }
+  return rows;
+}
+
 function convGuessReseau(name){
   const n = name.trim();
   if(n === '100% Santé') return '100% Santé';
@@ -6174,6 +6396,19 @@ function convertSourceWorkbook(wb){
     if(EXCLUDE.has(trimmed)) return;
     const ws = wb.Sheets[sheetName];
     if(!ws || !ws['!ref']) return;
+
+    if(trimmed === 'Lentilles'){
+      const lignes = convParseLentillesSheet(ws);
+      if(!lignes.length) return;
+      sheetsUsed++;
+      hierarchy['Lentilles'] = hierarchy['Lentilles'] || [];
+      lignes.forEach(l => {
+        if(hierarchy['Lentilles'].indexOf(l.mutuelle) < 0) hierarchy['Lentilles'].push(l.mutuelle);
+        flat.push(['Lentilles', l.mutuelle, 'Forfait Lentilles', l.name, l.code, l.price, l.pct]);
+      });
+      return;
+    }
+
     let rows;
     if(trimmed === 'SC MNPAF'){
       rows = convParseScMnpaf(ws);
@@ -6343,6 +6578,37 @@ precosPublishBtn.addEventListener('click', () => {
   });
 });
 
+/* Lentilles — PMSS (Admin) */
+const lentillesPmssInput = document.getElementById('lentillesPmssInput');
+const lentillesPmssSaveBtn = document.getElementById('lentillesPmssSaveBtn');
+const lentillesPmssError = document.getElementById('lentillesPmssError');
+const lentillesPmssSuccess = document.getElementById('lentillesPmssSuccess');
+
+function renderLentillesPmssField(){
+  if(lentillesPmssInput && LENTILLES_PMSS_MENSUEL) lentillesPmssInput.value = LENTILLES_PMSS_MENSUEL;
+}
+
+lentillesPmssSaveBtn && lentillesPmssSaveBtn.addEventListener('click', async () => {
+  lentillesPmssError.classList.remove('show');
+  lentillesPmssSuccess.classList.remove('show');
+  const v = parseFloat(String(lentillesPmssInput.value).replace(',','.'));
+  if(isNaN(v) || v <= 0){
+    lentillesPmssError.textContent = 'Merci de saisir un montant valide.';
+    lentillesPmssError.classList.add('show');
+    return;
+  }
+  try{
+    await AppStorage.set('lentilles-pmss', String(v));
+    LENTILLES_PMSS_MENSUEL = v;
+    lentillesPmssSuccess.textContent = 'PMSS enregistré.';
+    lentillesPmssSuccess.classList.add('show');
+    renderPrecosResults(); // reflète immédiatement si Lentilles est déjà affiché côté opticien
+  } catch(e){
+    lentillesPmssError.textContent = e.message || "Impossible d'enregistrer.";
+    lentillesPmssError.classList.add('show');
+  }
+});
+
 /* Visibilité des mutuelles (Admin) */
 const precosVisibilityPanel = document.getElementById('precosVisibilityPanel');
 
@@ -6365,6 +6631,7 @@ function renderVisibilityPanel(){
         <span style="display:flex;align-items:center;gap:10px;">
           <span class="visibility-status ${visible?'on':''}">${visible?'Actif':'Masqué'}</span>
           <span class="toggle-switch ${visible?'on':''}" data-mutuelle="${escapeHtml(m)}"></span>
+          <button type="button" class="memo-remove-btn" data-reseau="${escapeHtml(reseau)}" data-mutuelle="${escapeHtml(m)}" data-del-mutuelle="1" title="Supprimer cette mutuelle">🗑</button>
         </span>
       </label>`;
     });
@@ -6385,6 +6652,39 @@ function renderVisibilityPanel(){
       populatePrecosReseaux(); // reflète immédiatement côté opticien
     });
   });
+
+  precosVisibilityPanel.querySelectorAll('[data-del-mutuelle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const reseau = btn.dataset.reseau;
+      const m = btn.dataset.mutuelle;
+      if(!confirm(`Supprimer définitivement "${m}" (${reseau}) et tous ses verres ? Cette action ne peut pas être annulée.`)) return;
+      deleteMutuelle(reseau, m);
+    });
+  });
+}
+
+function deleteMutuelle(reseau, mutuelle){
+  PRECOS_DATA = PRECOS_DATA.filter(r => !(r[0] === reseau && r[1] === mutuelle));
+  if(PRECOS_HIER[reseau]){
+    PRECOS_HIER[reseau] = PRECOS_HIER[reseau].filter(m => m !== mutuelle);
+    if(!PRECOS_HIER[reseau].length) delete PRECOS_HIER[reseau];
+  }
+  delete PRECOS_VISIBILITY[mutuelle];
+  Object.keys(PRECOS_TYPE_OVERRIDES).forEach(key => {
+    if(key.indexOf(reseau+'||'+mutuelle+'||') === 0) delete PRECOS_TYPE_OVERRIDES[key];
+  });
+  Promise.all([
+    AppStorage.set('precos-data', JSON.stringify(PRECOS_DATA)),
+    AppStorage.set('precos-hierarchy', JSON.stringify(PRECOS_HIER)),
+    AppStorage.set('precos-visibility', JSON.stringify(PRECOS_VISIBILITY)),
+    AppStorage.set('precos-type-overrides', JSON.stringify(PRECOS_TYPE_OVERRIDES)),
+  ]).then(() => {
+    renderVisibilityPanel();
+    populatePrecosReseaux();
+    populateVerresMgmtReseaux();
+    verresMgmtPanel.innerHTML = '';
+    renderPrecosResults();
+  }).catch(e => alert("Erreur lors de la suppression : " + e.message));
 }
 
 /* Sous-onglets Admin */
@@ -6451,9 +6751,12 @@ function renderVerresMgmtPanel(){
         <div class="verres-mgmt-name">${escapeHtml(row[3])}</div>
         <div class="verres-mgmt-cat">${escapeHtml(row[2])}</div>
       </div>
-      <select class="verres-mgmt-select${overridden?' overridden':''}" data-key="${escapeHtml(key)}">
-        ${VERRES_TYPE_OPTIONS.map(t => `<option value="${t}"${t===effectiveType?' selected':''}>${VERRES_TYPE_LABELS[t]}</option>`).join('')}
-      </select>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <select class="verres-mgmt-select${overridden?' overridden':''}" data-key="${escapeHtml(key)}">
+          ${VERRES_TYPE_OPTIONS.map(t => `<option value="${t}"${t===effectiveType?' selected':''}>${VERRES_TYPE_LABELS[t]}</option>`).join('')}
+        </select>
+        <button type="button" class="memo-remove-btn" data-key="${escapeHtml(key)}" data-del-verre="1" title="Supprimer ce verre">🗑</button>
+      </div>
     </div>`;
   });
   verresMgmtPanel.innerHTML = html;
@@ -6465,6 +6768,22 @@ function renderVerresMgmtPanel(){
       sel.classList.add('overridden');
       AppStorage.set('precos-type-overrides', JSON.stringify(PRECOS_TYPE_OVERRIDES)).catch(() => {});
       renderPrecosResults(); // reflète immédiatement côté opticien si la même mutuelle est ouverte
+    });
+  });
+
+  verresMgmtPanel.querySelectorAll('[data-del-verre]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      if(!confirm('Supprimer définitivement ce verre ?')) return;
+      PRECOS_DATA = PRECOS_DATA.filter(r => precosRowKey(r) !== key);
+      delete PRECOS_TYPE_OVERRIDES[key];
+      Promise.all([
+        AppStorage.set('precos-data', JSON.stringify(PRECOS_DATA)),
+        AppStorage.set('precos-type-overrides', JSON.stringify(PRECOS_TYPE_OVERRIDES)),
+      ]).then(() => {
+        renderVerresMgmtPanel();
+        renderPrecosResults();
+      }).catch(e => alert("Erreur lors de la suppression : " + e.message));
     });
   });
 }
@@ -6667,7 +6986,7 @@ const TABS = [
   { btn: tabMontures, view: viewMontures, title: 'Hauteur Cote B', subtitle: 'Recherchez une monture, la hauteur se calcule automatiquement' },
   { btn: tabSav, view: viewSav, title: 'SAV Lunettes', subtitle: 'Formulaire de demande au service après-vente C·Evidentia' },
   { btn: tabRa, view: viewRa, title: 'Procédure RA', subtitle: 'RA et double équipement VL/VP par mutuelle' },
-  { btn: tabAtelier, view: viewAtelier, title: 'Dépôt Fiche Atelier / SAV', subtitle: 'Dépôt, tri et fusion des fiches atelier (accès protégé)', onActivate: resetAtelierToLogin },
+  { btn: tabAtelier, view: viewAtelier, title: 'Dépôt Fiches Atelier', subtitle: 'Dépôt, tri et fusion des fiches atelier (accès protégé)', onActivate: resetAtelierToLogin },
   { btn: tabSuivi, view: viewSuivi, title: 'Suivi Fournisseur', subtitle: "Statut des commandes bloquées, mis à jour automatiquement (French exclu — commandes par mail)", onActivate: loadSuiviFournisseur },
   { btn: tabAdmin, view: viewAdmin, title: 'Admin', subtitle: 'Mise à jour des bases montures et préconisations (accès protégé)', onActivate: resetAdminToLogin },
 ];
@@ -6801,8 +7120,11 @@ async function deleteSuiviJob(job){
   }
 }
 
+const suiviNewFournisseur = document.getElementById('suiviNewFournisseur');
+
 suiviAddJobBtn.addEventListener('click', async () => {
   const job = suiviNewJob.value.trim().toUpperCase();
+  const fournisseur = suiviNewFournisseur.value;
   if(!/^J\d{9}$/.test(job)){
     alert('Format attendu : J suivi de 9 chiffres (ex. J101110767).');
     return;
@@ -6812,7 +7134,7 @@ suiviAddJobBtn.addEventListener('click', async () => {
     return;
   }
   if(!SUIVI_DATA[job]){
-    SUIVI_DATA[job] = { client:'', fournisseur:'', ref_monture:'', sku:'', statut_fournisseur:'', observation:'' };
+    SUIVI_DATA[job] = { client:'', fournisseur, ref_monture:'', sku:'', statut_fournisseur:'', observation:'' };
     try{
       await AppStorage.set('suivi_fournisseur', JSON.stringify(SUIVI_DATA));
     } catch(e){
@@ -6821,8 +7143,15 @@ suiviAddJobBtn.addEventListener('click', async () => {
     }
   }
   suiviNewJob.value = '';
+  suiviNewFournisseur.value = '';
   renderSuiviTable();
 });
+
+/* Le complément client/réf. monture se fait désormais via le bookmarklet
+   "Compléter via C'Evidentia" (glissé dans la barre de favoris) — voir le
+   lien dans l'onglet Suivi Fournisseur. Il tourne dans le navigateur, sur
+   app.cevidentia.com, pendant que l'utilisateur y est déjà connecté : plus
+   besoin de déclenchement serveur ni de mots de passe saisis ici. */
 
 
 /* ============ ÉCART PUPILLAIRE (PD) ============ */
@@ -7700,6 +8029,19 @@ loadData();
 loadPrecosData();
 loadLensFormulas();
 loadSavMemos();
+
+/* Lien direct depuis le bookmarklet "Générer code-barre" (?barcode_ref=...) :
+   ouvre directement l'onglet Dépôt Fiches Atelier, prêt pour le mot de passe ;
+   une fois connecté, la référence est auto-remplie et imprimée (voir atelierLoginBtn). */
+(function initBarcodeDeepLink(){
+  const params = new URLSearchParams(location.search);
+  const ref = params.get('barcode_ref');
+  if(!ref) return;
+  pendingBarcodeRef = ref;
+  history.replaceState(null, '', location.pathname + location.hash);
+  const atelierEntry = TABS.find(t => t.btn === tabAtelier);
+  if(atelierEntry) activateTab(atelierEntry);
+})();
 </script>
 </body>
 </html>
